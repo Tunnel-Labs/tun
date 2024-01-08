@@ -8,6 +8,7 @@ import monorepoPackageJson from "../package.json";
 import { generatePatch } from "./utils/patch.js";
 
 await generatePatch();
+
 const { applyPatch } = applyPatchesExports;
 
 fs.rmSync("build", { force: true, recursive: true });

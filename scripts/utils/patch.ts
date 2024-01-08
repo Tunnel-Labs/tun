@@ -64,6 +64,7 @@ export async function generatePatch() {
 		import { getMonorepoDirpath } from 'get-monorepo-root';
 		import { exports as resolveExports } from 'resolve.exports';
 		import { getMonorepoPackages } from 'monorepo-packages';
+		import { pathToFileURL, fileURLToPath } from 'node:url';
 
 		const monorepoDirpath = getMonorepoDirpath(import.meta.url);
 		if (monorepoDirpath === undefined) {
@@ -86,35 +87,240 @@ export async function generatePatch() {
     files: "dist/esm/index.cjs",
     from: /^/,
     to: outdent({ trimTrailingNewline: false })`
-		const { createTildeImportExpander } = require('tilde-imports');
-		const { isGlobSpecifier, createGlobfileManager } = require('glob-imports');
-		const { getMonorepoDirpath } = require('get-monorepo-root');
-		const { exports: resolveExports } = require('resolve.exports');
-		const { getMonorepoPackages } = require('monorepo-packages');
+			const { createTildeImportExpander } = require('tilde-imports');
+			const { isGlobSpecifier, createGlobfileManager } = require('glob-imports');
+			const { getMonorepoDirpath } = require('get-monorepo-root');
+			const { exports: resolveExports } = require('resolve.exports');
+			const { getMonorepoPackages } = require('monorepo-packages');
+			const { pathToFileURL, fileURLToPath } = require('node:url');
 
-		const monorepoDirpath = getMonorepoDirpath(__dirname);
-		if (monorepoDirpath === undefined) {
-			throw new Error('Could not find monorepo root');
-		}
+			const monorepoDirpath = getMonorepoDirpath(__dirname);
+			if (monorepoDirpath === undefined) {
+				throw new Error('Could not find monorepo root');
+			}
 
-		const monorepoPackages = getMonorepoPackages({
-			monorepoDirpath
-		});
-		const expandTildeImport = createTildeImportExpander({
-			monorepoDirpath
-		});
-		const { getGlobfileContents, getGlobfilePath } = createGlobfileManager({
-			monorepoDirpath
-		});
-	`,
+			const monorepoPackages = getMonorepoPackages({
+				monorepoDirpath
+			});
+			const expandTildeImport = createTildeImportExpander({
+				monorepoDirpath
+			});
+			const { getGlobfileContents, getGlobfilePath } = createGlobfileManager({
+				monorepoDirpath
+			});
+		`,
   });
 
   replace({
-    files: ["dist/esm/index.mjs", "dist/esm/index.cjs"],
-    from: /(?:O|F)=async function\((\w,\w,\w,\w)\)\{/,
+    files: ["dist/cjs/index.cjs"],
+    from: /^/,
+    to: outdent`
+			const { isGlobSpecifier, createGlobfileManager } = require( 'glob-imports');
+			const { createTildeImportExpander } = require( 'tilde-imports');
+			const { getMonorepoDirpath } = require( 'get-monorepo-root');
+			const { isFileEsmSync } = require( 'is-file-esm-ts');
+			const { getMonorepoPackages } = require( 'monorepo-packages');
+			const resolve = require('resolve.exports');
+
+			const monorepoDirpath = getMonorepoDirpath(__dirname);
+			if (monorepoDirpath === undefined) {
+				throw new Error('Could not find monorepo root');
+			}
+
+			const monorepoPackages = getMonorepoPackages({
+				monorepoDirpath
+			});
+
+			const expandTildeImport = createTildeImportExpander({
+				monorepoDirpath
+			});
+			const { getGlobfileContents, getGlobfilePath } = createGlobfileManager({
+				monorepoDirpath
+			});
+
+			const transformExtensions = [
+				'.js',
+				'.cjs',
+				'.cts',
+				'.mjs',
+				'.mts',
+				'.ts',
+				'.tsx',
+				'.jsx'
+			];
+		`,
+  });
+
+  replace({
+    files: ["dist/cjs/index.mjs"],
+    from: /^/,
+    to: outdent`
+			import { isGlobSpecifier, createGlobfileManager } from 'glob-imports';
+			import { createTildeImportExpander } from 'tilde-imports';
+			import { getMonorepoDirpath } from 'get-monorepo-root';
+			import { isFileEsmSync } from 'is-file-esm-ts';
+			import { getMonorepoPackages } from 'monorepo-packages';
+			import resolve from 'resolve.exports';
+
+			const monorepoDirpath = getMonorepoDirpath(__dirname);
+			if (monorepoDirpath === undefined) {
+				throw new Error('Could not find monorepo root');
+			}
+
+			const monorepoPackages = getMonorepoPackages({
+				monorepoDirpath
+			});
+
+			const expandTildeImport = createTildeImportExpander({
+				monorepoDirpath
+			});
+			const { getGlobfileContents, getGlobfilePath } = createGlobfileManager({
+				monorepoDirpath
+			});
+
+			const transformExtensions = [
+				'.js',
+				'.cjs',
+				'.cts',
+				'.mjs',
+				'.mts',
+				'.ts',
+				'.tsx',
+				'.jsx'
+			];
+		`,
+  });
+
+  replace({
+    files: ["dist/cjs/index.cjs", "dist/cjs/index.mjs"],
+    from: /const (\w)=\((\w,\w)\)=>\{/,
     to: outdent({ trimTrailingNewline: false })`
-		O=async function($1){
-			const [specifier, context, defaultResolve, recursiveCall] = arguments;
+			const $1=($2)=>{
+				const [module, filePath] = [$2];
+				if (path.basename(filePath).startsWith('__virtual__:')) {
+					const virtualFileContents = getGlobfileContents({
+						globfilePath: filePath,
+						moduleType: 'commonjs',
+						filepathType: 'absolute'
+					});
+
+					module._compile(virtualFileContents, filePath);
+					return;
+				}
+
+				const shouldTransformFile = transformExtensions.some((extension) =>
+					filePath.endsWith(extension)
+				);
+				if (!shouldTransformFile) {
+					return defaultLoader(module, filePath);
+				}
+
+				let code = fs.readFileSync(filePath, 'utf8');
+
+				if (filePath.includes('/node_modules/')) {
+					try {
+						if (isFileEsmSync(filePath)) {
+							const transformed = transformSync(code, filePath, { format: 'cjs' });
+							code = applySourceMap(transformed, filePath);
+						}
+					} catch {
+						// Ignore invalid file extension issues
+					}
+
+					module._compile(code, filePath);
+					return;
+				}
+		`,
+  });
+
+  replace({
+    from: /\._resolveFilename=\((\w,\w,\w,\w)\)=>\{/,
+    files: ["dist/cjs/index.cjs", "dist/cjs/index.mjs"],
+    to: outdent({ trimTrailingNewline: false })`
+			._resolveFilename=($1)=>{
+				const [request, parent, isMain, options] = [$1];
+				if (parent && isGlobSpecifier(request)) {
+					return getGlobfilePath({
+						globfileModuleSpecifier: request,
+						importerFilepath: parent.filename
+					});
+				}
+
+				if (parent && parent.filename !== null && request.startsWith('~')) {
+					request = expandTildeImport({
+						importSpecifier: request,
+						importerFilepath: parent.filename
+					});
+				}
+
+				if (request.startsWith('@-/')) {
+					const packageSlug = request.match(/@-\\\/([^/]+)/)?.[1];
+					if (packageSlug === undefined) {
+						throw new Error(
+							\`Could not extract monorepo package slug from "\${request}"\`
+						);
+					}
+
+					const packageMetadata = monorepoPackages[\`@-/\${packageSlug}\`];
+					if (packageMetadata === undefined) {
+						throw new Error(\`Could not find monorepo package "\${request}"\`);
+					}
+
+					const { packageDirpath, packageJson } = packageMetadata;
+
+					const relativeImportPath = request.replace(\`@-/\${packageSlug}\`, '.');
+					const relativeFilePaths =
+						resolve.exports(packageJson, relativeImportPath) ?? [];
+
+					if (relativeFilePaths.length > 0) {
+						return path.join(packageDirpath, relativeFilePaths[0]);
+					}
+				}
+		`,
+  });
+
+	replace({
+		files: ['dist/esm/index.mjs', 'dist/esm/index.cjs'],
+		from: /=async function\((\w,\w,\w)\)\{/,
+		to: outdent({ trimTrailingNewline: false })`
+			=async function($1){
+				const [url, context, defaultLoad] = [$1];
+
+				// If the file doesn't have an extension, we should return the source directly
+				if (url.startsWith('file://') && path.extname(url) === '') {
+					const source = await fs.promises.readFile(fileURLToPath(url), 'utf8');
+					return {
+						format: 'commonjs',
+						source,
+						shortCircuit: true
+					};
+				}
+
+				const globfilePath = path
+					.normalize(url.startsWith('file://') ? fileURLToPath(url) : url)
+					.replace(/^[a-zA-Z]:/, '');
+
+				if (path.basename(globfilePath).startsWith('__virtual__:')) {
+					const globfileContents = getGlobfileContents({
+						globfilePath,
+						filepathType: 'absolute'
+					});
+
+					return {
+						source: globfileContents,
+						format: 'module',
+						shortCircuit: true
+					};
+				}
+		`
+	})
+
+  replace({
+    files: ["dist/esm/index.mjs", "dist/esm/index.cjs"],
+    from: /=async function\((\w,\w,\w,\w)\)\{/,
+    to: outdent({ trimTrailingNewline: false })`
+		=async function($1){
+			const [specifier, context, defaultResolve, recursiveCall] = [$1];
 			if (specifier.includes('/node_modules/')) {
 				return defaultResolve(specifier, context);
 			}
@@ -185,29 +391,35 @@ export async function generatePatch() {
 
   replace({
     files: ["dist/esm/index.mjs"],
-    from: "C();",
-    to: outdent({ trimTrailingNewline: false })`
-		import path from 'node:path';
-		import { createRequire } from 'node:module';
-		import { isFileEsmSync } from 'is-file-esm-ts';
-		// When the \`--import\` flag is used, Node.js tries to load the entrypoint using
-		// ESM, which breaks for extension-less JavaScript files.
-		// Thus, if we detect that the entrypoint is an extension-less file, we
-		// short-circuit and load it via CommonJS instead.
-		if (process.argv[1] !== undefined && path.extname(process.argv[1]) === '') {
-			try {
-				if (isFileEsmSync(process.argv[1])) {
-					import(process.argv[1]);
+    from: [/^/, "&&C();"],
+    to: [
+      outdent`
+			import path from 'node:path';
+			import { createRequire } from 'node:module';
+			import { isFileEsmSync } from 'is-file-esm-ts';
+		`,
+      outdent({ trimTrailingNewline: false })`
+			// When the \`--import\` flag is used, Node.js tries to load the entrypoint using
+			// ESM, which breaks for extension-less JavaScript files.
+			// Thus, if we detect that the entrypoint is an extension-less file, we
+			// short-circuit and load it via CommonJS instead.
+			&&(() => {
+				if (process.argv[1] !== undefined && path.extname(process.argv[1]) === '') {
+					try {
+						if (isFileEsmSync(process.argv[1])) {
+							import(process.argv[1]);
+						} else {
+							createRequire(import.meta.url)(process.argv[1]);
+						}
+					} catch {
+						createRequire(import.meta.url)(process.argv[1]);
+					}
 				} else {
-					createRequire(import.meta.url)(process.argv[1]);
+					C();
 				}
-			} catch {
-				createRequire(import.meta.url)(process.argv[1]);
-			}
-		} else {
-			registerLoader();
-		}
-	`,
+			})();
+		`,
+    ],
   });
 
   replace({
@@ -259,6 +471,7 @@ export async function generatePatch() {
     return p;
   }
 
+  fs.mkdirSync("generated", { recursive: true });
   fs.writeFileSync(
     `generated/tsx@${version}.patch`,
     stdout
