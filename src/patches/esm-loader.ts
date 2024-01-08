@@ -1,7 +1,6 @@
 import { outdent } from "outdent";
 
 const topLevelVariables = outdent`
-	const monorepoDirpath = getMonorepoDirpath(__dirname);
 	if (monorepoDirpath === undefined) {
 		throw new Error('Could not find monorepo root');
 	}
@@ -29,6 +28,7 @@ export default [
 			const { exports: resolveExports } = require('resolve.exports');
 			const { getMonorepoPackages } = require('monorepo-packages');
 			const { pathToFileURL, fileURLToPath } = require('node:url');
+			const monorepoDirpath = getMonorepoDirpath(__dirname);
 			${topLevelVariables}
 		`,
   },
@@ -42,6 +42,7 @@ export default [
 			import { exports as resolveExports } from 'resolve.exports';
 			import { getMonorepoPackages } from 'monorepo-packages';
 			import { pathToFileURL, fileURLToPath } from 'node:url';
+			const monorepoDirpath = getMonorepoDirpath(import.meta.url);
 			${topLevelVariables}
 		`,
   },

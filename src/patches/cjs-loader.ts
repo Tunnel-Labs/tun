@@ -1,7 +1,6 @@
 import { outdent } from "outdent";
 
 const topLevelVariables = outdent`
-	const monorepoDirpath = getMonorepoDirpath(__dirname);
 	if (monorepoDirpath === undefined) {
 		throw new Error('Could not find monorepo root');
 	}
@@ -40,6 +39,7 @@ export default [
 			const { isFileEsmSync } = require( 'is-file-esm-ts');
 			const { getMonorepoPackages } = require( 'monorepo-packages');
 			const resolve = require('resolve.exports');
+			const monorepoDirpath = getMonorepoDirpath(__dirname);
 			${topLevelVariables}
 		`,
   },
@@ -53,6 +53,7 @@ export default [
 			import { isFileEsmSync } from 'is-file-esm-ts';
 			import { getMonorepoPackages } from 'monorepo-packages';
 			import resolve from 'resolve.exports';
+			const monorepoDirpath = getMonorepoDirpath(import.meta.url);
 			${topLevelVariables}
 		`,
   },

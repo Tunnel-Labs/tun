@@ -114,7 +114,7 @@ index c81fa598119bd3d694a4aef75d67e9d1d76781cb..22d36179c2e2027ff480c0481668cde1
 +	}
 +var t;const r=s.indexOf("?");if(r!==-1&&(s=s.slice(0,r)),x&&!M.test(s)&&!((t=e==null?void 0:e.filename)!=null&&t.includes(A))){const i=x(s);for(const h of i){const _=F(h,e,n,o);if(_)return _;try{return T(h,e,n,o)}catch{}}}const c=F(s,e,n,o);return c||T(s,e,n,o)};const F=(s,e,n,o)=>{const t=j.resolveTsPath(s);if(e!=null&&e.filename&&O.test(e.filename)&&t)for(const r of t)try{return T(r,e,n,o)}catch(c){const{code:i}=c;if(i!=="MODULE_NOT_FOUND"&&i!=="ERR_PACKAGE_PATH_NOT_EXPORTED")throw c}};
 diff --git a/dist/cjs/index.mjs b/dist/cjs/index.mjs
-index cd6f75632c9bb0f802b05959b8bfe534f565d675..ac5d051807827d4b2d5bd73f87487b6bd9c3b1f5 100755
+index cd6f75632c9bb0f802b05959b8bfe534f565d675..a9db441f88ee81cc52dada979ac2ef8c89d30fa6 100755
 --- a/dist/cjs/index.mjs
 +++ b/dist/cjs/index.mjs
 @@ -1 +1,109 @@
@@ -125,7 +125,7 @@ index cd6f75632c9bb0f802b05959b8bfe534f565d675..ac5d051807827d4b2d5bd73f87487b6b
 +import { isFileEsmSync } from 'is-file-esm-ts';
 +import { getMonorepoPackages } from 'monorepo-packages';
 +import resolve from 'resolve.exports';
-+const monorepoDirpath = getMonorepoDirpath(__dirname);
++const monorepoDirpath = getMonorepoDirpath(import.meta.url);
 +if (monorepoDirpath === undefined) {
 +	throw new Error('Could not find monorepo root');
 +}
@@ -357,7 +357,7 @@ index 05320e807275c9fcef3401891b15a15e200df860..e2af0456dcfee39da569b69567287104
 +	}
 +var a;T&&T({type:"dependency",path:e}),J.test(e)&&(t[P]||(t[P]={}),t[P].type="json");const n=await r(e,t);if(!n.source)return n;const c=e.startsWith("file://")?g.fileURLToPath(e):e,o=n.source.toString();if(n.format==="json"||y.test(e)){const s=await R.transform(o,c,{tsconfigRaw:(a=I)==null?void 0:a(c)});return{format:"module",source:k(s)}}if(n.format==="module"){const s=R.transformDynamicImport(c,o);s&&(n.source=k(s))}return n};p.isFeatureSupported(p.moduleRegister)&&O.isMainThread&&D(),exports.globalPreload=H,exports.initialize=G,exports.load=z,exports.resolve=F;
 diff --git a/dist/esm/index.mjs b/dist/esm/index.mjs
-index db003e02dcd1917f5a4872b3d6cc771abd778c1f..edab485a476a55a0d3b63d5edc359c7d4778d96c 100755
+index db003e02dcd1917f5a4872b3d6cc771abd778c1f..56c6abeccf5ac2fb4f53470d53ed8822c62f8781 100755
 --- a/dist/esm/index.mjs
 +++ b/dist/esm/index.mjs
 @@ -1,5 +1,142 @@
@@ -369,7 +369,7 @@ index db003e02dcd1917f5a4872b3d6cc771abd778c1f..edab485a476a55a0d3b63d5edc359c7d
 +import { exports as resolveExports } from 'resolve.exports';
 +import { getMonorepoPackages } from 'monorepo-packages';
 +import { pathToFileURL, fileURLToPath } from 'node:url';
-+const monorepoDirpath = getMonorepoDirpath(__dirname);
++const monorepoDirpath = getMonorepoDirpath(import.meta.url);
 +if (monorepoDirpath === undefined) {
 +	throw new Error('Could not find monorepo root');
 +}
