@@ -1,5 +1,6 @@
 {
 	"name": "@-/tun",
+	"version": "0.2.4",
 	"scripts": {
 		"build": "./scripts/build.ts"
 	},
@@ -18,5 +19,8 @@
 	},
 	"devDependencies": {
 		"@types/node": "20.10.7"
+	},
+	"publishConfig": {
+		"directory": "build"
 	}
 }

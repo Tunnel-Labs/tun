@@ -19,14 +19,14 @@ index cd6f75632c9bb0f802b05959b8bfe534f565d675..db9cbfeafc736004d2a002e617d9fb8e
 +writable: true,
 +configurable: true,});const d=m._resolveFilename.bind(m);m._resolveFilename=(t,s,r,n)=>{var e;const o=t.indexOf("?");if(o!==-1&&(t=t.slice(0,o)),_&&!I.test(t)&&!((e=s==null?void 0:s.filename)!=null&&e.includes(D))){const i=_(t);for(const u of i){const T=S(u,s,r,n);if(T)return T;try{return d(u,s,r,n)}catch{}}}const c=S(t,s,r,n);return c||d(t,s,r,n)};const S=(t,s,r,n)=>{const e=N(t);if(s!=null&&s.filename&&C.test(s.filename)&&e)for(const o of e)try{return d(o,s,r,n)}catch(c){const{code:i}=c;if(i!=="MODULE_NOT_FOUND"&&i!=="ERR_PACKAGE_PATH_NOT_EXPORTED")throw c}};
 diff --git a/dist/esm/index.cjs b/dist/esm/index.cjs
-index 05320e807275c9fcef3401891b15a15e200df860..7ce55c4b5cb114cfecc09c844011412c5bc83923 100755
+index 05320e807275c9fcef3401891b15a15e200df860..2a3766ae2e6c06768d2645b1b74ef6a1862b0163 100755
 --- a/dist/esm/index.cjs
 +++ b/dist/esm/index.cjs
 @@ -1,5 +1,92 @@
 +const { createTildeImportExpander } = require('tilde-imports');
 +const { isGlobSpecifier, createGlobfileManager } = require('glob-imports');
 +const { getMonorepoDirpath } = require('get-monorepo-root');
-+const { exports as resolveExports } = require('resolve.exports');
++const { exports: resolveExports } = require('resolve.exports');
 +const { getMonorepoPackages } = require('monorepo-packages');
 +
 +const monorepoDirpath = getMonorepoDirpath(__dirname);
