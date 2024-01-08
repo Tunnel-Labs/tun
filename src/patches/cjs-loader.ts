@@ -114,11 +114,11 @@ export default [
 		`,
   },
   {
-    from: /\._resolveFilename=\((\w,\w,\w,\w)\)=>\{/,
+    from: /\._resolveFilename=\(((\w),(\w),(\w),(\w))\)=>\{/,
     files: ["dist/cjs/index.cjs", "dist/cjs/index.mjs"],
     to: outdent({ trimTrailingNewline: false })`
 			._resolveFilename=($1)=>{
-				let [request, parent, isMain, options] = [$1];
+				const [request, parent, isMain, options] = [$1];
 				if (parent && isGlobSpecifier(request)) {
 					return getGlobfilePath({
 						globfileModuleSpecifier: request,
@@ -127,7 +127,7 @@ export default [
 				}
 
 				if (parent && parent.filename !== null && request.startsWith('~')) {
-					request = expandTildeImport({
+					$2 = expandTildeImport({
 						importSpecifier: request,
 						importerFilepath: parent.filename
 					});
