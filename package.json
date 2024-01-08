@@ -1,11 +1,16 @@
 {
 	"name": "@-/tun",
+	"scripts": {
+		"build": "./scripts/build.ts"
+	},
 	"type": "module",
 	"dependencies": {
+		"desm": "1.3.0",
 		"downl": "0.1.2",
 		"escape-string-regexp": "5.0.0",
 		"execa": "8.0.1",
 		"outdent": "0.8.0",
+		"patch-package": "8.0.0",
 		"pathe": "1.1.1",
 		"replace-in-file": "7.1.0",
 		"tmp-promise": "3.0.3",

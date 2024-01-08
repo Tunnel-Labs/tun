@@ -9,17 +9,18 @@ import tmp from "tmp-promise";
 import * as replaceInFile from "replace-in-file";
 import escapeStringRegexp from "escape-string-regexp";
 
-const temporarySourceDirectory = await tmp.dir();
-const temporaryPatchDirectory = await tmp.dir();
+const temporaryDirectory = await tmp.dir();
+const temporarySourceDirpath = path.join(temporaryDirectory.path, "a");
+const temporaryPatchDirpath = path.join(temporaryDirectory.path, "b");
 
 const version = "4.7.0";
 await downl(
   `https://registry.npmjs.org/tsx/-/tsx-${version}.tgz`,
-  temporarySourceDirectory.path,
+  temporarySourceDirpath,
   { extract: { strip: 1 } }
 );
 
-await fs.cpSync(temporarySourceDirectory.path, temporaryPatchDirectory.path, {
+await fs.cpSync(temporarySourceDirpath, temporaryPatchDirpath, {
   recursive: true,
 });
 
@@ -30,7 +31,7 @@ const replace = function (
     ...options,
     files: [options.files]
       .flat()
-      .map((file) => path.join(temporaryPatchDirectory.path, file)),
+      .map((file) => path.join(temporaryPatchDirpath, file)),
     from: [options.from]
       .flat()
       .map((file) =>
@@ -222,7 +223,7 @@ replace({
 });
 
 const { stdout } = await execa(
-  "git",
+  "/usr/bin/git",
   [
     "-c",
     "core.safecrlf=false",
@@ -234,10 +235,11 @@ const { stdout } = await execa(
     "--full-index",
     "--no-index",
     "--text",
-    temporarySourceDirectory.path,
-    temporaryPatchDirectory.path,
+    temporarySourceDirpath,
+    temporaryPatchDirpath,
   ],
   {
+    reject: false,
     env: {
       ...process.env,
       // These variables aim to ignore the global git config so we get predictable output
@@ -251,4 +253,35 @@ const { stdout } = await execa(
   }
 );
 
-fs.writeFileSync(stdout, `generated/tsx@${version}.patch`);
+function removeTrailingAndLeadingSlash(p: string) {
+  if (p.startsWith("/") || p.endsWith("/")) {
+    return p.replace(/^\/|\/$/g, "");
+  }
+  return p;
+}
+
+fs.writeFileSync(
+  `generated/tsx@${version}.patch`,
+  stdout
+    .replace(
+      new RegExp(
+        `(a|b)(${escapeStringRegexp(
+          `/${removeTrailingAndLeadingSlash(temporarySourceDirpath)}/`
+        )})`,
+        "g"
+      ),
+      "$1/"
+    )
+    .replace(
+      new RegExp(
+        `(a|b)${escapeStringRegexp(
+          `/${removeTrailingAndLeadingSlash(temporaryPatchDirpath)}/`
+        )}`,
+        "g"
+      ),
+      "$1/"
+    )
+    .replace(new RegExp(escapeStringRegexp(`${temporarySourceDirpath}/`), "g"), "")
+    .replace(new RegExp(escapeStringRegexp(`${temporaryPatchDirpath}/`), "g"), "")
+    .replace(/\n\\ No newline at end of file\n$/, "\n")
+);
