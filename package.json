@@ -1,0 +1,17 @@
+{
+	"name": "@-/tun",
+	"type": "module",
+	"dependencies": {
+		"downl": "0.1.2",
+		"escape-string-regexp": "5.0.0",
+		"execa": "8.0.1",
+		"outdent": "0.8.0",
+		"pathe": "1.1.1",
+		"replace-in-file": "7.1.0",
+		"tmp-promise": "3.0.3",
+		"tsx": "4.7.0"
+	},
+	"devDependencies": {
+		"@types/node": "20.10.7"
+	}
+}

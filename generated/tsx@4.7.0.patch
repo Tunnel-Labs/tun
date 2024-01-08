@@ -1,0 +1,93 @@
+diff --git a/dist/cjs/index.cjs b/dist/cjs/index.cjs
+index c81fa598119bd3d694a4aef75d67e9d1d76781cb..687de685fa92d4901cc003e6e212860ef2d2629b 100755
+--- a/dist/cjs/index.cjs
++++ b/dist/cjs/index.cjs
+@@ -1 +1,4 @@
+-"use strict";var f=require("path"),P=require("fs"),a=require("module"),l=require("get-tsconfig"),g=require("../source-map.cjs"),d=require("../index-5d1f01e6.cjs"),j=require("../resolve-ts-path-3fca13b7.cjs"),q=require("../client-2f0df4a6.cjs");require("url"),require("esbuild"),require("crypto"),require("os"),require("../temporary-directory-2a027842.cjs"),require("net"),require("../get-pipe-path-86e97fc9.cjs");const E=s=>{if(s.includes("import")||s.includes("export"))try{return d.parseEsm(s)[3]}catch{return!0}return!1},M=/^\.{1,2}\//,O=/\.[cm]?tsx?$/,A=`${f.sep}node_modules${f.sep}`,u=process.env.TSX_TSCONFIG_PATH?{path:f.resolve(process.env.TSX_TSCONFIG_PATH),config:l.parseTsconfig(process.env.TSX_TSCONFIG_PATH)}:l.getTsconfig(),p=u&&l.createFilesMatcher(u),x=u&&l.createPathsMatcher(u),y=g.installSourceMapSupport(),m=a._extensions,N=m[".js"],R=[".cts",".mts",".ts",".tsx",".jsx"],b=[".js",".cjs",".mjs"];let v;q.connectingToServer.then(s=>{v=s},()=>{});const S=(s,e)=>{v&&v({type:"dependency",path:e});const n=R.some(r=>e.endsWith(r)),o=b.some(r=>e.endsWith(r));if(!n&&!o)return N(s,e);let t=P.readFileSync(e,"utf8");if(e.endsWith(".cjs")){const r=d.transformDynamicImport(e,t);r&&(t=y(r))}else if(n||E(t)){const r=d.transformSync(t,e,{tsconfigRaw:p==null?void 0:p(e)});t=y(r)}s._compile(t,e)};[".js",".ts",".tsx",".jsx"].forEach(s=>{m[s]=S}),Object.defineProperty(m,".mjs",{value:S,enumerable:!1});const T=a._resolveFilename.bind(a);a._resolveFilename=(s,e,n,o)=>{var t;const r=s.indexOf("?");if(r!==-1&&(s=s.slice(0,r)),x&&!M.test(s)&&!((t=e==null?void 0:e.filename)!=null&&t.includes(A))){const i=x(s);for(const h of i){const _=F(h,e,n,o);if(_)return _;try{return T(h,e,n,o)}catch{}}}const c=F(s,e,n,o);return c||T(s,e,n,o)};const F=(s,e,n,o)=>{const t=j.resolveTsPath(s);if(e!=null&&e.filename&&O.test(e.filename)&&t)for(const r of t)try{return T(r,e,n,o)}catch(c){const{code:i}=c;if(i!=="MODULE_NOT_FOUND"&&i!=="ERR_PACKAGE_PATH_NOT_EXPORTED")throw c}};
++"use strict";var f=require("path"),P=require("fs"),a=require("module"),l=require("get-tsconfig"),g=require("../source-map.cjs"),d=require("../index-5d1f01e6.cjs"),j=require("../resolve-ts-path-3fca13b7.cjs"),q=require("../client-2f0df4a6.cjs");require("url"),require("esbuild"),require("crypto"),require("os"),require("../temporary-directory-2a027842.cjs"),require("net"),require("../get-pipe-path-86e97fc9.cjs");const E=s=>{if(s.includes("import")||s.includes("export"))try{return d.parseEsm(s)[3]}catch{return!0}return!1},M=/^\.{1,2}\//,O=/\.[cm]?tsx?$/,A=`${f.sep}node_modules${f.sep}`,u=process.env.TSX_TSCONFIG_PATH?{path:f.resolve(process.env.TSX_TSCONFIG_PATH),config:l.parseTsconfig(process.env.TSX_TSCONFIG_PATH)}:l.getTsconfig(),p=u&&l.createFilesMatcher(u),x=u&&l.createPathsMatcher(u),y=g.installSourceMapSupport(),m=a._extensions,N=m[".js"],R=[".cts",".mts",".ts",".tsx",".jsx"],b=[".js",".cjs",".mjs"];let v;q.connectingToServer.then(s=>{v=s},()=>{});const S=(s,e)=>{v&&v({type:"dependency",path:e});const n=R.some(r=>e.endsWith(r)),o=b.some(r=>e.endsWith(r));if(!n&&!o)return N(s,e);let t=P.readFileSync(e,"utf8");if(e.endsWith(".cjs")){const r=d.transformDynamicImport(e,t);r&&(t=y(r))}else if(n||E(t)){const r=d.transformSync(t,e,{tsconfigRaw:p==null?void 0:p(e)});t=y(r)}s._compile(t,e)};[".js",".ts",".tsx",".jsx"].forEach(s=>{m[s]=S}),Object.defineProperty(m,".mjs",{value:S,enumerable:!1,
++// We set this property as enumerable so other packages can overwrite it if needed instead of erroring
++writable: true,
++configurable: true,});const T=a._resolveFilename.bind(a);a._resolveFilename=(s,e,n,o)=>{var t;const r=s.indexOf("?");if(r!==-1&&(s=s.slice(0,r)),x&&!M.test(s)&&!((t=e==null?void 0:e.filename)!=null&&t.includes(A))){const i=x(s);for(const h of i){const _=F(h,e,n,o);if(_)return _;try{return T(h,e,n,o)}catch{}}}const c=F(s,e,n,o);return c||T(s,e,n,o)};const F=(s,e,n,o)=>{const t=j.resolveTsPath(s);if(e!=null&&e.filename&&O.test(e.filename)&&t)for(const r of t)try{return T(r,e,n,o)}catch(c){const{code:i}=c;if(i!=="MODULE_NOT_FOUND"&&i!=="ERR_PACKAGE_PATH_NOT_EXPORTED")throw c}};
+diff --git a/dist/cjs/index.mjs b/dist/cjs/index.mjs
+index cd6f75632c9bb0f802b05959b8bfe534f565d675..db9cbfeafc736004d2a002e617d9fb8e2c34bde5 100755
+--- a/dist/cjs/index.mjs
++++ b/dist/cjs/index.mjs
+@@ -1 +1,4 @@
+-import f from"path";import x from"fs";import m from"module";import{parseTsconfig as F,getTsconfig as j,createFilesMatcher as E,createPathsMatcher as O}from"get-tsconfig";import{installSourceMapSupport as P}from"../source-map.mjs";import{p as M,t as g,a as A}from"../index-bd1ceb03.mjs";import{r as N}from"../resolve-ts-path-eb3847f5.mjs";import{c as R}from"../client-e665d820.mjs";import"url";import"esbuild";import"crypto";import"os";import"../temporary-directory-04b36185.mjs";import"net";import"../get-pipe-path-b74d9893.mjs";const b=t=>{if(t.includes("import")||t.includes("export"))try{return M(t)[3]}catch{return!0}return!1},I=/^\.{1,2}\//,C=/\.[cm]?tsx?$/,D=`${f.sep}node_modules${f.sep}`,a=process.env.TSX_TSCONFIG_PATH?{path:f.resolve(process.env.TSX_TSCONFIG_PATH),config:F(process.env.TSX_TSCONFIG_PATH)}:j(),h=a&&E(a),_=a&&O(a),v=P(),l=m._extensions,G=l[".js"],H=[".cts",".mts",".ts",".tsx",".jsx"],X=[".js",".cjs",".mjs"];let p;R.then(t=>{p=t},()=>{});const y=(t,s)=>{p&&p({type:"dependency",path:s});const r=H.some(o=>s.endsWith(o)),n=X.some(o=>s.endsWith(o));if(!r&&!n)return G(t,s);let e=x.readFileSync(s,"utf8");if(s.endsWith(".cjs")){const o=g(s,e);o&&(e=v(o))}else if(r||b(e)){const o=A(e,s,{tsconfigRaw:h==null?void 0:h(s)});e=v(o)}t._compile(e,s)};[".js",".ts",".tsx",".jsx"].forEach(t=>{l[t]=y}),Object.defineProperty(l,".mjs",{value:y,enumerable:!1});const d=m._resolveFilename.bind(m);m._resolveFilename=(t,s,r,n)=>{var e;const o=t.indexOf("?");if(o!==-1&&(t=t.slice(0,o)),_&&!I.test(t)&&!((e=s==null?void 0:s.filename)!=null&&e.includes(D))){const i=_(t);for(const u of i){const T=S(u,s,r,n);if(T)return T;try{return d(u,s,r,n)}catch{}}}const c=S(t,s,r,n);return c||d(t,s,r,n)};const S=(t,s,r,n)=>{const e=N(t);if(s!=null&&s.filename&&C.test(s.filename)&&e)for(const o of e)try{return d(o,s,r,n)}catch(c){const{code:i}=c;if(i!=="MODULE_NOT_FOUND"&&i!=="ERR_PACKAGE_PATH_NOT_EXPORTED")throw c}};
++import f from"path";import x from"fs";import m from"module";import{parseTsconfig as F,getTsconfig as j,createFilesMatcher as E,createPathsMatcher as O}from"get-tsconfig";import{installSourceMapSupport as P}from"../source-map.mjs";import{p as M,t as g,a as A}from"../index-bd1ceb03.mjs";import{r as N}from"../resolve-ts-path-eb3847f5.mjs";import{c as R}from"../client-e665d820.mjs";import"url";import"esbuild";import"crypto";import"os";import"../temporary-directory-04b36185.mjs";import"net";import"../get-pipe-path-b74d9893.mjs";const b=t=>{if(t.includes("import")||t.includes("export"))try{return M(t)[3]}catch{return!0}return!1},I=/^\.{1,2}\//,C=/\.[cm]?tsx?$/,D=`${f.sep}node_modules${f.sep}`,a=process.env.TSX_TSCONFIG_PATH?{path:f.resolve(process.env.TSX_TSCONFIG_PATH),config:F(process.env.TSX_TSCONFIG_PATH)}:j(),h=a&&E(a),_=a&&O(a),v=P(),l=m._extensions,G=l[".js"],H=[".cts",".mts",".ts",".tsx",".jsx"],X=[".js",".cjs",".mjs"];let p;R.then(t=>{p=t},()=>{});const y=(t,s)=>{p&&p({type:"dependency",path:s});const r=H.some(o=>s.endsWith(o)),n=X.some(o=>s.endsWith(o));if(!r&&!n)return G(t,s);let e=x.readFileSync(s,"utf8");if(s.endsWith(".cjs")){const o=g(s,e);o&&(e=v(o))}else if(r||b(e)){const o=A(e,s,{tsconfigRaw:h==null?void 0:h(s)});e=v(o)}t._compile(e,s)};[".js",".ts",".tsx",".jsx"].forEach(t=>{l[t]=y}),Object.defineProperty(l,".mjs",{value:y,enumerable:!1,
++// We set this property as enumerable so other packages can overwrite it if needed instead of erroring
++writable: true,
++configurable: true,});const d=m._resolveFilename.bind(m);m._resolveFilename=(t,s,r,n)=>{var e;const o=t.indexOf("?");if(o!==-1&&(t=t.slice(0,o)),_&&!I.test(t)&&!((e=s==null?void 0:s.filename)!=null&&e.includes(D))){const i=_(t);for(const u of i){const T=S(u,s,r,n);if(T)return T;try{return d(u,s,r,n)}catch{}}}const c=S(t,s,r,n);return c||d(t,s,r,n)};const S=(t,s,r,n)=>{const e=N(t);if(s!=null&&s.filename&&C.test(s.filename)&&e)for(const o of e)try{return d(o,s,r,n)}catch(c){const{code:i}=c;if(i!=="MODULE_NOT_FOUND"&&i!=="ERR_PACKAGE_PATH_NOT_EXPORTED")throw c}};
+diff --git a/dist/esm/index.cjs b/dist/esm/index.cjs
+index 05320e807275c9fcef3401891b15a15e200df860..dfd1a99314ce5cb104e43977e6f090b6f66dd9d8 100755
+--- a/dist/esm/index.cjs
++++ b/dist/esm/index.cjs
+@@ -1,3 +1,23 @@
++const { createTildeImportExpander } = require('tilde-imports');
++const { isGlobSpecifier, createGlobfileManager } = require('glob-imports');
++const { getMonorepoDirpath } = require('get-monorepo-root');
++const { exports as resolveExports } = require('resolve.exports');
++const { getMonorepoPackages } = require('monorepo-packages');
++
++const monorepoDirpath = getMonorepoDirpath(__dirname);
++if (monorepoDirpath === undefined) {
++	throw new Error('Could not find monorepo root');
++}
++
++const monorepoPackages = getMonorepoPackages({
++	monorepoDirpath
++});
++const expandTildeImport = createTildeImportExpander({
++	monorepoDirpath
++});
++const { getGlobfileContents, getGlobfilePath } = createGlobfileManager({
++	monorepoDirpath
++});
+ "use strict";var O=require("worker_threads"),p=require("../node-features-c450ed54.cjs"),M=require("module"),v=require("../source-map.cjs"),h=require("path"),g=require("url"),R=require("../index-5d1f01e6.cjs"),L=require("../resolve-ts-path-3fca13b7.cjs"),N=require("../client-2f0df4a6.cjs"),d=require("get-tsconfig"),E=require("fs");require("esbuild"),require("crypto"),require("os"),require("../temporary-directory-2a027842.cjs"),require("net"),require("../get-pipe-path-86e97fc9.cjs");var f=typeof document<"u"?document.currentScript:null;const D=()=>{v.installSourceMapSupport(),M.register("./index.mjs",{parentURL:typeof document>"u"?require("url").pathToFileURL(__filename).href:f&&f.src||new URL("esm/index.cjs",document.baseURI).href,data:!0})},m=new Map;async function b(e){if(m.has(e))return m.get(e);if(!await E.promises.access(e).then(()=>!0,()=>!1)){m.set(e,void 0);return}const r=await E.promises.readFile(e,"utf8");try{const a=JSON.parse(r);return m.set(e,a),a}catch{throw new Error(`Error parsing: ${e}`)}}async function x(e){let t=new URL("package.json",e);for(;!t.pathname.endsWith("/node_modules/package.json");){const r=g.fileURLToPath(t),a=await b(r);if(a)return a;const n=t;if(t=new URL("../package.json",t),t.pathname===n.pathname)break}}async function A(e){var t;const r=await x(e);return(t=r==null?void 0:r.type)!=null?t:"commonjs"}const l=process.env.TSX_TSCONFIG_PATH?{path:h.resolve(process.env.TSX_TSCONFIG_PATH),config:d.parseTsconfig(process.env.TSX_TSCONFIG_PATH)}:d.getTsconfig(),I=l&&d.createFilesMatcher(l),q=l&&d.createPathsMatcher(l),S="file://",y=/\.([cm]?ts|[tj]sx)($|\?)/,J=/\.json(?:$|\?)/,C=e=>{const t=h.extname(e);if(t===".json")return"json";if(t===".mjs"||t===".mts")return"module";if(t===".cjs"||t===".cts")return"commonjs"},W=e=>{const t=C(e);if(t)return t;if(y.test(e))return A(e)},k=v.installSourceMapSupport(),U=/\/(?:$|\?)/,G=async e=>{if(!e)throw new Error(`tsx must be loaded with --import instead of --loader
+ The --loader flag was deprecated in Node v20.6.0 and v18.19.0`)},H=()=>`
+ const require = getBuiltin('module').createRequire("${typeof document>"u"?require("url").pathToFileURL(__filename).href:f&&f.src||new URL("esm/index.cjs",document.baseURI).href}");
+diff --git a/dist/esm/index.mjs b/dist/esm/index.mjs
+index db003e02dcd1917f5a4872b3d6cc771abd778c1f..4147a7db81db9367c00c7b8803aabff234357e3e 100755
+--- a/dist/esm/index.mjs
++++ b/dist/esm/index.mjs
+@@ -1,3 +1,23 @@
++import { createTildeImportExpander } from 'tilde-imports';
++import { isGlobSpecifier, createGlobfileManager } from 'glob-imports';
++import { getMonorepoDirpath } from 'get-monorepo-root';
++import { exports as resolveExports } from 'resolve.exports';
++import { getMonorepoPackages } from 'monorepo-packages';
++
++const monorepoDirpath = getMonorepoDirpath(import.meta.url);
++if (monorepoDirpath === undefined) {
++	throw new Error('Could not find monorepo root');
++}
++
++const monorepoPackages = getMonorepoPackages({
++	monorepoDirpath
++});
++const expandTildeImport = createTildeImportExpander({
++	monorepoDirpath
++});
++const { getGlobfileContents, getGlobfilePath } = createGlobfileManager({
++	monorepoDirpath
++});
+ import{isMainThread as F}from"worker_threads";import{i as w,a as v,m as M}from"../node-features-fb266590.mjs";import N from"module";import{installSourceMapSupport as _}from"../source-map.mjs";import f from"path";import{fileURLToPath as P,pathToFileURL as U}from"url";import{b as D,t as A}from"../index-bd1ceb03.mjs";import{r as J}from"../resolve-ts-path-eb3847f5.mjs";import{c as b}from"../client-e665d820.mjs";import{parseTsconfig as x,getTsconfig as I,createFilesMatcher as L,createPathsMatcher as $}from"get-tsconfig";import T from"fs";import"esbuild";import"crypto";import"os";import"../temporary-directory-04b36185.mjs";import"net";import"../get-pipe-path-b74d9893.mjs";const C=()=>{_(),N.register("./index.mjs",{parentURL:import.meta.url,data:!0})},p=new Map;async function W(t){if(p.has(t))return p.get(t);if(!await T.promises.access(t).then(()=>!0,()=>!1)){p.set(t,void 0);return}const o=await T.promises.readFile(t,"utf8");try{const e=JSON.parse(o);return p.set(t,e),e}catch{throw new Error(`Error parsing: ${t}`)}}async function q(t){let r=new URL("package.json",t);for(;!r.pathname.endsWith("/node_modules/package.json");){const o=P(r),e=await W(o);if(e)return e;const a=r;if(r=new URL("../package.json",r),r.pathname===a.pathname)break}}async function G(t){var r;const o=await q(t);return(r=o==null?void 0:o.type)!=null?r:"commonjs"}const u=process.env.TSX_TSCONFIG_PATH?{path:f.resolve(process.env.TSX_TSCONFIG_PATH),config:x(process.env.TSX_TSCONFIG_PATH)}:I(),H=u&&L(u),E=u&&$(u),k="file://",h=/\.([cm]?ts|[tj]sx)($|\?)/,X=/\.json(?:$|\?)/,K=t=>{const r=f.extname(t);if(r===".json")return"json";if(r===".mjs"||r===".mts")return"module";if(r===".cjs"||r===".cts")return"commonjs"},Q=t=>{const r=K(t);if(r)return r;if(h.test(t))return G(t)},R=_(),S=/\/(?:$|\?)/,z=async t=>{if(!t)throw new Error(`tsx must be loaded with --import instead of --loader
+ The --loader flag was deprecated in Node v20.6.0 and v18.19.0`)},B=()=>`
+ const require = getBuiltin('module').createRequire("${import.meta.url}");
+diff --git a/package.json b/package.json
+index f5ca4c0850ae101c8da9c9531b1e66d559a477a4..d7e60285c8295f419fb260f09bdd7093b4bc1cac 100644
+--- a/package.json
++++ b/package.json
+@@ -37,6 +37,12 @@
+     "node": ">=18.0.0"
+   },
+   "dependencies": {
++	"is-file-esm-ts": "^0.1.0",
++	"tilde-imports": "^3.1.3",
++	"glob-imports": "^3.0.0",
++	"get-monorepo-root": "^1.2.0",
++	"resolve.exports": "^2.0.2",
++	"monorepo-packages": "^1.1.0",
+     "esbuild": "~0.19.10",
+     "get-tsconfig": "^4.7.2"
+   },
