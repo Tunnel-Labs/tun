@@ -48,7 +48,7 @@ export async function generatePatch() {
     from: ['"dependencies": {'],
     to: outdent`
 		"dependencies": {
-			"is-file-esm-ts": "^0.1.0",
+			"is-file-esm-ts": "^0.1.6",
 			"tilde-imports": "^3.1.3",
 			"glob-imports": "^3.0.0",
 			"get-monorepo-root": "^1.2.0",

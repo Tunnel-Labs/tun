@@ -42,7 +42,7 @@ const getTransformerPatch = ({
   from: /const (\w)=\((\w,\w)\)=>\{/,
   to: outdent({ trimTrailingNewline: false })`
 		const $1=($2)=>{
-			const [module, filePath] = [$2];
+			let [module, filePath] = [$2];
 			if (path.basename(filePath).startsWith('__virtual__:')) {
 				const virtualFileContents = getGlobfileContents({
 					globfilePath: filePath,
@@ -69,7 +69,8 @@ const getTransformerPatch = ({
 						const transformed = ${transformSyncIdentifier}(code, filePath, { format: 'cjs' });
 						code = ${applySourceMapIdentifier}(transformed, filePath);
 					}
-				} catch {
+				} catch (e){
+					console.error(e)
 					// Ignore invalid file extension issues
 				}
 
@@ -117,7 +118,7 @@ export default [
     files: ["dist/cjs/index.cjs", "dist/cjs/index.mjs"],
     to: outdent({ trimTrailingNewline: false })`
 			._resolveFilename=($1)=>{
-				const [request, parent, isMain, options] = [$1];
+				let [request, parent, isMain, options] = [$1];
 				if (parent && isGlobSpecifier(request)) {
 					return getGlobfilePath({
 						globfileModuleSpecifier: request,
@@ -168,7 +169,7 @@ export default [
     files: ["dist/cjs/index.cjs"],
     identifiers: {
       transformSyncIdentifier: "d.transformSync",
-      applySourceMapIdentifier: "v",
+      applySourceMapIdentifier: "y",
     },
   }),
   {

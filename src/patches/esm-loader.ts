@@ -51,7 +51,7 @@ export default [
     from: /=async function\((\w,\w,\w)\)\{/,
     to: outdent({ trimTrailingNewline: false })`
 			=async function($1){
-				const [url, context, defaultLoad] = [$1];
+				let [url, context, defaultLoad] = [$1];
 
 				// If the file doesn't have an extension, we should return the source directly
 				if (url.startsWith('file://') && path.extname(url) === '') {
@@ -86,7 +86,7 @@ export default [
     from: /=async function\((\w,\w,\w,\w)\)\{/,
     to: outdent({ trimTrailingNewline: false })`
 			=async function($1){
-				const [specifier, context, defaultResolve, recursiveCall] = [$1];
+				let [specifier, context, defaultResolve, recursiveCall] = [$1];
 				if (specifier.includes('/node_modules/')) {
 					return defaultResolve(specifier, context);
 				}

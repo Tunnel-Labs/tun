@@ -1,8 +1,8 @@
 diff --git a/dist/cjs/index.cjs b/dist/cjs/index.cjs
-index c81fa598119bd3d694a4aef75d67e9d1d76781cb..5d633b359668a7cf6a0d51b805373000c9275c06 100755
+index c81fa598119bd3d694a4aef75d67e9d1d76781cb..64523c108e0182b16741293c8294f3be341c03d6 100755
 --- a/dist/cjs/index.cjs
 +++ b/dist/cjs/index.cjs
-@@ -1 +1,111 @@
+@@ -1 +1,112 @@
 -"use strict";var f=require("path"),P=require("fs"),a=require("module"),l=require("get-tsconfig"),g=require("../source-map.cjs"),d=require("../index-5d1f01e6.cjs"),j=require("../resolve-ts-path-3fca13b7.cjs"),q=require("../client-2f0df4a6.cjs");require("url"),require("esbuild"),require("crypto"),require("os"),require("../temporary-directory-2a027842.cjs"),require("net"),require("../get-pipe-path-86e97fc9.cjs");const E=s=>{if(s.includes("import")||s.includes("export"))try{return d.parseEsm(s)[3]}catch{return!0}return!1},M=/^\.{1,2}\//,O=/\.[cm]?tsx?$/,A=`${f.sep}node_modules${f.sep}`,u=process.env.TSX_TSCONFIG_PATH?{path:f.resolve(process.env.TSX_TSCONFIG_PATH),config:l.parseTsconfig(process.env.TSX_TSCONFIG_PATH)}:l.getTsconfig(),p=u&&l.createFilesMatcher(u),x=u&&l.createPathsMatcher(u),y=g.installSourceMapSupport(),m=a._extensions,N=m[".js"],R=[".cts",".mts",".ts",".tsx",".jsx"],b=[".js",".cjs",".mjs"];let v;q.connectingToServer.then(s=>{v=s},()=>{});const S=(s,e)=>{v&&v({type:"dependency",path:e});const n=R.some(r=>e.endsWith(r)),o=b.some(r=>e.endsWith(r));if(!n&&!o)return N(s,e);let t=P.readFileSync(e,"utf8");if(e.endsWith(".cjs")){const r=d.transformDynamicImport(e,t);r&&(t=y(r))}else if(n||E(t)){const r=d.transformSync(t,e,{tsconfigRaw:p==null?void 0:p(e)});t=y(r)}s._compile(t,e)};[".js",".ts",".tsx",".jsx"].forEach(s=>{m[s]=S}),Object.defineProperty(m,".mjs",{value:S,enumerable:!1});const T=a._resolveFilename.bind(a);a._resolveFilename=(s,e,n,o)=>{var t;const r=s.indexOf("?");if(r!==-1&&(s=s.slice(0,r)),x&&!M.test(s)&&!((t=e==null?void 0:e.filename)!=null&&t.includes(A))){const i=x(s);for(const h of i){const _=F(h,e,n,o);if(_)return _;try{return T(h,e,n,o)}catch{}}}const c=F(s,e,n,o);return c||T(s,e,n,o)};const F=(s,e,n,o)=>{const t=j.resolveTsPath(s);if(e!=null&&e.filename&&O.test(e.filename)&&t)for(const r of t)try{return T(r,e,n,o)}catch(c){const{code:i}=c;if(i!=="MODULE_NOT_FOUND"&&i!=="ERR_PACKAGE_PATH_NOT_EXPORTED")throw c}};
 +const fs = require('fs');
 +const path = require('path');
@@ -38,7 +38,7 @@ index c81fa598119bd3d694a4aef75d67e9d1d76781cb..5d633b359668a7cf6a0d51b805373000
 +	'.tsx',
 +	'.jsx'
 +];"use strict";var f=require("path"),P=require("fs"),a=require("module"),l=require("get-tsconfig"),g=require("../source-map.cjs"),d=require("../index-5d1f01e6.cjs"),j=require("../resolve-ts-path-3fca13b7.cjs"),q=require("../client-2f0df4a6.cjs");require("url"),require("esbuild"),require("crypto"),require("os"),require("../temporary-directory-2a027842.cjs"),require("net"),require("../get-pipe-path-86e97fc9.cjs");const E=s=>{if(s.includes("import")||s.includes("export"))try{return d.parseEsm(s)[3]}catch{return!0}return!1},M=/^\.{1,2}\//,O=/\.[cm]?tsx?$/,A=`${f.sep}node_modules${f.sep}`,u=process.env.TSX_TSCONFIG_PATH?{path:f.resolve(process.env.TSX_TSCONFIG_PATH),config:l.parseTsconfig(process.env.TSX_TSCONFIG_PATH)}:l.getTsconfig(),p=u&&l.createFilesMatcher(u),x=u&&l.createPathsMatcher(u),y=g.installSourceMapSupport(),m=a._extensions,N=m[".js"],R=[".cts",".mts",".ts",".tsx",".jsx"],b=[".js",".cjs",".mjs"];let v;q.connectingToServer.then(s=>{v=s},()=>{});const S=(s,e)=>{
-+	const [module, filePath] = [s,e];
++	let [module, filePath] = [s,e];
 +	if (path.basename(filePath).startsWith('__virtual__:')) {
 +		const virtualFileContents = getGlobfileContents({
 +			globfilePath: filePath,
@@ -63,9 +63,10 @@ index c81fa598119bd3d694a4aef75d67e9d1d76781cb..5d633b359668a7cf6a0d51b805373000
 +		try {
 +			if (isFileEsmSync(filePath)) {
 +				const transformed = d.transformSync(code, filePath, { format: 'cjs' });
-+				code = v(transformed, filePath);
++				code = y(transformed, filePath);
 +			}
-+		} catch {
++		} catch (e){
++			console.error(e)
 +			// Ignore invalid file extension issues
 +		}
 +
@@ -76,7 +77,7 @@ index c81fa598119bd3d694a4aef75d67e9d1d76781cb..5d633b359668a7cf6a0d51b805373000
 +// We set this property as enumerable so other packages can overwrite it if needed instead of erroring
 +writable: true,
 +configurable: true,});const T=a._resolveFilename.bind(a);a._resolveFilename=(s,e,n,o)=>{
-+	const [request, parent, isMain, options] = [s,e,n,o];
++	let [request, parent, isMain, options] = [s,e,n,o];
 +	if (parent && isGlobSpecifier(request)) {
 +		return getGlobfilePath({
 +			globfileModuleSpecifier: request,
@@ -116,10 +117,10 @@ index c81fa598119bd3d694a4aef75d67e9d1d76781cb..5d633b359668a7cf6a0d51b805373000
 +	}
 +var t;const r=s.indexOf("?");if(r!==-1&&(s=s.slice(0,r)),x&&!M.test(s)&&!((t=e==null?void 0:e.filename)!=null&&t.includes(A))){const i=x(s);for(const h of i){const _=F(h,e,n,o);if(_)return _;try{return T(h,e,n,o)}catch{}}}const c=F(s,e,n,o);return c||T(s,e,n,o)};const F=(s,e,n,o)=>{const t=j.resolveTsPath(s);if(e!=null&&e.filename&&O.test(e.filename)&&t)for(const r of t)try{return T(r,e,n,o)}catch(c){const{code:i}=c;if(i!=="MODULE_NOT_FOUND"&&i!=="ERR_PACKAGE_PATH_NOT_EXPORTED")throw c}};
 diff --git a/dist/cjs/index.mjs b/dist/cjs/index.mjs
-index cd6f75632c9bb0f802b05959b8bfe534f565d675..08bd673066f86545c1820db887251a93a68a39da 100755
+index cd6f75632c9bb0f802b05959b8bfe534f565d675..448ba7927a3a069a1ec4ab447bf896ddfffa72e4 100755
 --- a/dist/cjs/index.mjs
 +++ b/dist/cjs/index.mjs
-@@ -1 +1,111 @@
+@@ -1 +1,112 @@
 -import f from"path";import x from"fs";import m from"module";import{parseTsconfig as F,getTsconfig as j,createFilesMatcher as E,createPathsMatcher as O}from"get-tsconfig";import{installSourceMapSupport as P}from"../source-map.mjs";import{p as M,t as g,a as A}from"../index-bd1ceb03.mjs";import{r as N}from"../resolve-ts-path-eb3847f5.mjs";import{c as R}from"../client-e665d820.mjs";import"url";import"esbuild";import"crypto";import"os";import"../temporary-directory-04b36185.mjs";import"net";import"../get-pipe-path-b74d9893.mjs";const b=t=>{if(t.includes("import")||t.includes("export"))try{return M(t)[3]}catch{return!0}return!1},I=/^\.{1,2}\//,C=/\.[cm]?tsx?$/,D=`${f.sep}node_modules${f.sep}`,a=process.env.TSX_TSCONFIG_PATH?{path:f.resolve(process.env.TSX_TSCONFIG_PATH),config:F(process.env.TSX_TSCONFIG_PATH)}:j(),h=a&&E(a),_=a&&O(a),v=P(),l=m._extensions,G=l[".js"],H=[".cts",".mts",".ts",".tsx",".jsx"],X=[".js",".cjs",".mjs"];let p;R.then(t=>{p=t},()=>{});const y=(t,s)=>{p&&p({type:"dependency",path:s});const r=H.some(o=>s.endsWith(o)),n=X.some(o=>s.endsWith(o));if(!r&&!n)return G(t,s);let e=x.readFileSync(s,"utf8");if(s.endsWith(".cjs")){const o=g(s,e);o&&(e=v(o))}else if(r||b(e)){const o=A(e,s,{tsconfigRaw:h==null?void 0:h(s)});e=v(o)}t._compile(e,s)};[".js",".ts",".tsx",".jsx"].forEach(t=>{l[t]=y}),Object.defineProperty(l,".mjs",{value:y,enumerable:!1});const d=m._resolveFilename.bind(m);m._resolveFilename=(t,s,r,n)=>{var e;const o=t.indexOf("?");if(o!==-1&&(t=t.slice(0,o)),_&&!I.test(t)&&!((e=s==null?void 0:s.filename)!=null&&e.includes(D))){const i=_(t);for(const u of i){const T=S(u,s,r,n);if(T)return T;try{return d(u,s,r,n)}catch{}}}const c=S(t,s,r,n);return c||d(t,s,r,n)};const S=(t,s,r,n)=>{const e=N(t);if(s!=null&&s.filename&&C.test(s.filename)&&e)for(const o of e)try{return d(o,s,r,n)}catch(c){const{code:i}=c;if(i!=="MODULE_NOT_FOUND"&&i!=="ERR_PACKAGE_PATH_NOT_EXPORTED")throw c}};
 +import path from 'path';
 +import fs from 'fs';
@@ -155,7 +156,7 @@ index cd6f75632c9bb0f802b05959b8bfe534f565d675..08bd673066f86545c1820db887251a93
 +	'.tsx',
 +	'.jsx'
 +];import f from"path";import x from"fs";import m from"module";import{parseTsconfig as F,getTsconfig as j,createFilesMatcher as E,createPathsMatcher as O}from"get-tsconfig";import{installSourceMapSupport as P}from"../source-map.mjs";import{p as M,t as g,a as A}from"../index-bd1ceb03.mjs";import{r as N}from"../resolve-ts-path-eb3847f5.mjs";import{c as R}from"../client-e665d820.mjs";import"url";import"esbuild";import"crypto";import"os";import"../temporary-directory-04b36185.mjs";import"net";import"../get-pipe-path-b74d9893.mjs";const b=t=>{if(t.includes("import")||t.includes("export"))try{return M(t)[3]}catch{return!0}return!1},I=/^\.{1,2}\//,C=/\.[cm]?tsx?$/,D=`${f.sep}node_modules${f.sep}`,a=process.env.TSX_TSCONFIG_PATH?{path:f.resolve(process.env.TSX_TSCONFIG_PATH),config:F(process.env.TSX_TSCONFIG_PATH)}:j(),h=a&&E(a),_=a&&O(a),v=P(),l=m._extensions,G=l[".js"],H=[".cts",".mts",".ts",".tsx",".jsx"],X=[".js",".cjs",".mjs"];let p;R.then(t=>{p=t},()=>{});const y=(t,s)=>{
-+	const [module, filePath] = [t,s];
++	let [module, filePath] = [t,s];
 +	if (path.basename(filePath).startsWith('__virtual__:')) {
 +		const virtualFileContents = getGlobfileContents({
 +			globfilePath: filePath,
@@ -182,7 +183,8 @@ index cd6f75632c9bb0f802b05959b8bfe534f565d675..08bd673066f86545c1820db887251a93
 +				const transformed = A(code, filePath, { format: 'cjs' });
 +				code = v(transformed, filePath);
 +			}
-+		} catch {
++		} catch (e){
++			console.error(e)
 +			// Ignore invalid file extension issues
 +		}
 +
@@ -193,7 +195,7 @@ index cd6f75632c9bb0f802b05959b8bfe534f565d675..08bd673066f86545c1820db887251a93
 +// We set this property as enumerable so other packages can overwrite it if needed instead of erroring
 +writable: true,
 +configurable: true,});const d=m._resolveFilename.bind(m);m._resolveFilename=(t,s,r,n)=>{
-+	const [request, parent, isMain, options] = [t,s,r,n];
++	let [request, parent, isMain, options] = [t,s,r,n];
 +	if (parent && isGlobSpecifier(request)) {
 +		return getGlobfilePath({
 +			globfileModuleSpecifier: request,
@@ -233,7 +235,7 @@ index cd6f75632c9bb0f802b05959b8bfe534f565d675..08bd673066f86545c1820db887251a93
 +	}
 +var e;const o=t.indexOf("?");if(o!==-1&&(t=t.slice(0,o)),_&&!I.test(t)&&!((e=s==null?void 0:s.filename)!=null&&e.includes(D))){const i=_(t);for(const u of i){const T=S(u,s,r,n);if(T)return T;try{return d(u,s,r,n)}catch{}}}const c=S(t,s,r,n);return c||d(t,s,r,n)};const S=(t,s,r,n)=>{const e=N(t);if(s!=null&&s.filename&&C.test(s.filename)&&e)for(const o of e)try{return d(o,s,r,n)}catch(c){const{code:i}=c;if(i!=="MODULE_NOT_FOUND"&&i!=="ERR_PACKAGE_PATH_NOT_EXPORTED")throw c}};
 diff --git a/dist/esm/index.cjs b/dist/esm/index.cjs
-index 05320e807275c9fcef3401891b15a15e200df860..e2af0456dcfee39da569b6956728710411e6842d 100755
+index 05320e807275c9fcef3401891b15a15e200df860..735bc88ec5d3ad336164d97d91a891cb3fe58b72 100755
 --- a/dist/esm/index.cjs
 +++ b/dist/esm/index.cjs
 @@ -1,5 +1,122 @@
@@ -264,7 +266,7 @@ index 05320e807275c9fcef3401891b15a15e200df860..e2af0456dcfee39da569b69567287104
  require('../source-map.cjs').installSourceMapSupport();
 -`,w=async(e,t,r)=>{const a=await e(t,r);return!a.format&&a.url.startsWith(S)&&(a.format=await W(a.url)),a},X=[".js",".json",".ts",".tsx",".jsx"];async function _(e,t,r){const[a,n]=e.split("?");let c;for(const o of X)try{return await w(r,a+o+(n?`?${n}`:""),t)}catch(s){if(c===void 0&&s instanceof Error){const{message:i}=s;s.message=s.message.replace(`${o}'`,"'"),s.stack=s.stack.replace(i,s.message),c=s}}throw c}async function j(e,t,r){const a=U.test(e),n=a?"index":"/index",[c,o]=e.split("?");try{return await _(c+n+(o?`?${o}`:""),t,r)}catch(s){if(!a)try{return await _(e,t,r)}catch{}const i=s,{message:u}=i;throw i.message=i.message.replace(`${n.replace("/",h.sep)}'`,"'"),i.stack=i.stack.replace(u,i.message),i}}const $=/^\.{1,2}\//,F=async function(e,t,r,a){var n;if(U.test(e))return await j(e,t,r);const c=e.startsWith(S)||$.test(e);if(q&&!c&&!((n=t.parentURL)!=null&&n.includes("/node_modules/"))){const o=q(e);for(const s of o)try{return await F(g.pathToFileURL(s).toString(),t,r)}catch{}}if(y.test(t.parentURL)){const o=L.resolveTsPath(e);if(o)for(const s of o)try{return await w(r,s,t)}catch(i){const{code:u}=i;if(u!=="ERR_MODULE_NOT_FOUND"&&u!=="ERR_PACKAGE_PATH_NOT_EXPORTED")throw i}}try{return await w(r,e,t)}catch(o){if(o instanceof Error&&!a){const{code:s}=o;if(s==="ERR_UNSUPPORTED_DIR_IMPORT")try{return await j(e,t,r)}catch(i){if(i.code!=="ERR_PACKAGE_IMPORT_NOT_DEFINED")throw i}if(s==="ERR_MODULE_NOT_FOUND")try{return await _(e,t,r)}catch{}}throw o}};let T;N.connectingToServer.then(e=>{T=e},()=>{});const P=p.isFeatureSupported(p.importAttributes)?"importAttributes":"importAssertions",z=async function(e,t,r){var a;T&&T({type:"dependency",path:e}),J.test(e)&&(t[P]||(t[P]={}),t[P].type="json");const n=await r(e,t);if(!n.source)return n;const c=e.startsWith("file://")?g.fileURLToPath(e):e,o=n.source.toString();if(n.format==="json"||y.test(e)){const s=await R.transform(o,c,{tsconfigRaw:(a=I)==null?void 0:a(c)});return{format:"module",source:k(s)}}if(n.format==="module"){const s=R.transformDynamicImport(c,o);s&&(n.source=k(s))}return n};p.isFeatureSupported(p.moduleRegister)&&O.isMainThread&&D(),exports.globalPreload=H,exports.initialize=G,exports.load=z,exports.resolve=F;
 +`,w=async(e,t,r)=>{const a=await e(t,r);return!a.format&&a.url.startsWith(S)&&(a.format=await W(a.url)),a},X=[".js",".json",".ts",".tsx",".jsx"];async function _(e,t,r){const[a,n]=e.split("?");let c;for(const o of X)try{return await w(r,a+o+(n?`?${n}`:""),t)}catch(s){if(c===void 0&&s instanceof Error){const{message:i}=s;s.message=s.message.replace(`${o}'`,"'"),s.stack=s.stack.replace(i,s.message),c=s}}throw c}async function j(e,t,r){const a=U.test(e),n=a?"index":"/index",[c,o]=e.split("?");try{return await _(c+n+(o?`?${o}`:""),t,r)}catch(s){if(!a)try{return await _(e,t,r)}catch{}const i=s,{message:u}=i;throw i.message=i.message.replace(`${n.replace("/",h.sep)}'`,"'"),i.stack=i.stack.replace(u,i.message),i}}const $=/^\.{1,2}\//,F=async function(e,t,r,a){
-+	const [specifier, context, defaultResolve, recursiveCall] = [e,t,r,a];
++	let [specifier, context, defaultResolve, recursiveCall] = [e,t,r,a];
 +	if (specifier.includes('/node_modules/')) {
 +		return defaultResolve(specifier, context);
 +	}
@@ -331,7 +333,7 @@ index 05320e807275c9fcef3401891b15a15e200df860..e2af0456dcfee39da569b69567287104
 +		}
 +	}
 +var n;if(U.test(e))return await j(e,t,r);const c=e.startsWith(S)||$.test(e);if(q&&!c&&!((n=t.parentURL)!=null&&n.includes("/node_modules/"))){const o=q(e);for(const s of o)try{return await F(g.pathToFileURL(s).toString(),t,r)}catch{}}if(y.test(t.parentURL)){const o=L.resolveTsPath(e);if(o)for(const s of o)try{return await w(r,s,t)}catch(i){const{code:u}=i;if(u!=="ERR_MODULE_NOT_FOUND"&&u!=="ERR_PACKAGE_PATH_NOT_EXPORTED")throw i}}try{return await w(r,e,t)}catch(o){if(o instanceof Error&&!a){const{code:s}=o;if(s==="ERR_UNSUPPORTED_DIR_IMPORT")try{return await j(e,t,r)}catch(i){if(i.code!=="ERR_PACKAGE_IMPORT_NOT_DEFINED")throw i}if(s==="ERR_MODULE_NOT_FOUND")try{return await _(e,t,r)}catch{}}throw o}};let T;N.connectingToServer.then(e=>{T=e},()=>{});const P=p.isFeatureSupported(p.importAttributes)?"importAttributes":"importAssertions",z=async function(e,t,r){
-+	const [url, context, defaultLoad] = [e,t,r];
++	let [url, context, defaultLoad] = [e,t,r];
 +
 +	// If the file doesn't have an extension, we should return the source directly
 +	if (url.startsWith('file://') && path.extname(url) === '') {
@@ -361,7 +363,7 @@ index 05320e807275c9fcef3401891b15a15e200df860..e2af0456dcfee39da569b69567287104
 +	}
 +var a;T&&T({type:"dependency",path:e}),J.test(e)&&(t[P]||(t[P]={}),t[P].type="json");const n=await r(e,t);if(!n.source)return n;const c=e.startsWith("file://")?g.fileURLToPath(e):e,o=n.source.toString();if(n.format==="json"||y.test(e)){const s=await R.transform(o,c,{tsconfigRaw:(a=I)==null?void 0:a(c)});return{format:"module",source:k(s)}}if(n.format==="module"){const s=R.transformDynamicImport(c,o);s&&(n.source=k(s))}return n};p.isFeatureSupported(p.moduleRegister)&&O.isMainThread&&D(),exports.globalPreload=H,exports.initialize=G,exports.load=z,exports.resolve=F;
 diff --git a/dist/esm/index.mjs b/dist/esm/index.mjs
-index db003e02dcd1917f5a4872b3d6cc771abd778c1f..56c6abeccf5ac2fb4f53470d53ed8822c62f8781 100755
+index db003e02dcd1917f5a4872b3d6cc771abd778c1f..3c517daf0860b2afe4122475d56d62f5dabfd297 100755
 --- a/dist/esm/index.mjs
 +++ b/dist/esm/index.mjs
 @@ -1,5 +1,142 @@
@@ -393,7 +395,7 @@ index db003e02dcd1917f5a4872b3d6cc771abd778c1f..56c6abeccf5ac2fb4f53470d53ed8822
  require('../source-map.cjs').installSourceMapSupport();
 -`,d=async(t,r,o)=>{const e=await t(r,o);return!e.format&&e.url.startsWith(k)&&(e.format=await Q(e.url)),e},V=[".js",".json",".ts",".tsx",".jsx"];async function l(t,r,o){const[e,a]=t.split("?");let c;for(const n of V)try{return await d(o,e+n+(a?`?${a}`:""),r)}catch(s){if(c===void 0&&s instanceof Error){const{message:i}=s;s.message=s.message.replace(`${n}'`,"'"),s.stack=s.stack.replace(i,s.message),c=s}}throw c}async function j(t,r,o){const e=S.test(t),a=e?"index":"/index",[c,n]=t.split("?");try{return await l(c+a+(n?`?${n}`:""),r,o)}catch(s){if(!e)try{return await l(t,r,o)}catch{}const i=s,{message:m}=i;throw i.message=i.message.replace(`${a.replace("/",f.sep)}'`,"'"),i.stack=i.stack.replace(m,i.message),i}}const Y=/^\.{1,2}\//,O=async function(t,r,o,e){var a;if(S.test(t))return await j(t,r,o);const c=t.startsWith(k)||Y.test(t);if(E&&!c&&!((a=r.parentURL)!=null&&a.includes("/node_modules/"))){const n=E(t);for(const s of n)try{return await O(U(s).toString(),r,o)}catch{}}if(h.test(r.parentURL)){const n=J(t);if(n)for(const s of n)try{return await d(o,s,r)}catch(i){const{code:m}=i;if(m!=="ERR_MODULE_NOT_FOUND"&&m!=="ERR_PACKAGE_PATH_NOT_EXPORTED")throw i}}try{return await d(o,t,r)}catch(n){if(n instanceof Error&&!e){const{code:s}=n;if(s==="ERR_UNSUPPORTED_DIR_IMPORT")try{return await j(t,r,o)}catch(i){if(i.code!=="ERR_PACKAGE_IMPORT_NOT_DEFINED")throw i}if(s==="ERR_MODULE_NOT_FOUND")try{return await l(t,r,o)}catch{}}throw n}};let g;b.then(t=>{g=t},()=>{});const y=w(v)?"importAttributes":"importAssertions",Z=async function(t,r,o){var e;g&&g({type:"dependency",path:t}),X.test(t)&&(r[y]||(r[y]={}),r[y].type="json");const a=await o(t,r);if(!a.source)return a;const c=t.startsWith("file://")?P(t):t,n=a.source.toString();if(a.format==="json"||h.test(t)){const s=await D(n,c,{tsconfigRaw:(e=H)==null?void 0:e(c)});return{format:"module",source:R(s)}}if(a.format==="module"){const s=A(c,n);s&&(a.source=R(s))}return a};w(M)&&F&&C();export{B as globalPreload,z as initialize,Z as load,O as resolve};
 +`,d=async(t,r,o)=>{const e=await t(r,o);return!e.format&&e.url.startsWith(k)&&(e.format=await Q(e.url)),e},V=[".js",".json",".ts",".tsx",".jsx"];async function l(t,r,o){const[e,a]=t.split("?");let c;for(const n of V)try{return await d(o,e+n+(a?`?${a}`:""),r)}catch(s){if(c===void 0&&s instanceof Error){const{message:i}=s;s.message=s.message.replace(`${n}'`,"'"),s.stack=s.stack.replace(i,s.message),c=s}}throw c}async function j(t,r,o){const e=S.test(t),a=e?"index":"/index",[c,n]=t.split("?");try{return await l(c+a+(n?`?${n}`:""),r,o)}catch(s){if(!e)try{return await l(t,r,o)}catch{}const i=s,{message:m}=i;throw i.message=i.message.replace(`${a.replace("/",f.sep)}'`,"'"),i.stack=i.stack.replace(m,i.message),i}}const Y=/^\.{1,2}\//,O=async function(t,r,o,e){
-+	const [specifier, context, defaultResolve, recursiveCall] = [t,r,o,e];
++	let [specifier, context, defaultResolve, recursiveCall] = [t,r,o,e];
 +	if (specifier.includes('/node_modules/')) {
 +		return defaultResolve(specifier, context);
 +	}
@@ -460,7 +462,7 @@ index db003e02dcd1917f5a4872b3d6cc771abd778c1f..56c6abeccf5ac2fb4f53470d53ed8822
 +		}
 +	}
 +var a;if(S.test(t))return await j(t,r,o);const c=t.startsWith(k)||Y.test(t);if(E&&!c&&!((a=r.parentURL)!=null&&a.includes("/node_modules/"))){const n=E(t);for(const s of n)try{return await O(U(s).toString(),r,o)}catch{}}if(h.test(r.parentURL)){const n=J(t);if(n)for(const s of n)try{return await d(o,s,r)}catch(i){const{code:m}=i;if(m!=="ERR_MODULE_NOT_FOUND"&&m!=="ERR_PACKAGE_PATH_NOT_EXPORTED")throw i}}try{return await d(o,t,r)}catch(n){if(n instanceof Error&&!e){const{code:s}=n;if(s==="ERR_UNSUPPORTED_DIR_IMPORT")try{return await j(t,r,o)}catch(i){if(i.code!=="ERR_PACKAGE_IMPORT_NOT_DEFINED")throw i}if(s==="ERR_MODULE_NOT_FOUND")try{return await l(t,r,o)}catch{}}throw n}};let g;b.then(t=>{g=t},()=>{});const y=w(v)?"importAttributes":"importAssertions",Z=async function(t,r,o){
-+	const [url, context, defaultLoad] = [t,r,o];
++	let [url, context, defaultLoad] = [t,r,o];
 +
 +	// If the file doesn't have an extension, we should return the source directly
 +	if (url.startsWith('file://') && path.extname(url) === '') {
@@ -509,14 +511,14 @@ index db003e02dcd1917f5a4872b3d6cc771abd778c1f..56c6abeccf5ac2fb4f53470d53ed8822
 +})();
 +export{B as globalPreload,z as initialize,Z as load,O as resolve};
 diff --git a/package.json b/package.json
-index f5ca4c0850ae101c8da9c9531b1e66d559a477a4..d7e60285c8295f419fb260f09bdd7093b4bc1cac 100644
+index f5ca4c0850ae101c8da9c9531b1e66d559a477a4..7ff32addee5da83a657a3d0627126941fd64bb15 100644
 --- a/package.json
 +++ b/package.json
 @@ -37,6 +37,12 @@
      "node": ">=18.0.0"
    },
    "dependencies": {
-+	"is-file-esm-ts": "^0.1.0",
++	"is-file-esm-ts": "^0.1.6",
 +	"tilde-imports": "^3.1.3",
 +	"glob-imports": "^3.0.0",
 +	"get-monorepo-root": "^1.2.0",
