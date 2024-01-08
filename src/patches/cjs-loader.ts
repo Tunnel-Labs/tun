@@ -164,7 +164,7 @@ export default [
     identifiers: {
       transformSync: "A",
       applySourceMap: "v",
-      defaultLoader: "N",
+      defaultLoader: "G",
     },
   }),
   getTransformerPatch({
@@ -172,7 +172,7 @@ export default [
     identifiers: {
       transformSync: "d.transformSync",
       applySourceMap: "y",
-      defaultLoader: "G",
+      defaultLoader: "N",
     },
   }),
   {
