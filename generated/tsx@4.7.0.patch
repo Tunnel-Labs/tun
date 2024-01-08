@@ -19,10 +19,10 @@ index cd6f75632c9bb0f802b05959b8bfe534f565d675..db9cbfeafc736004d2a002e617d9fb8e
 +writable: true,
 +configurable: true,});const d=m._resolveFilename.bind(m);m._resolveFilename=(t,s,r,n)=>{var e;const o=t.indexOf("?");if(o!==-1&&(t=t.slice(0,o)),_&&!I.test(t)&&!((e=s==null?void 0:s.filename)!=null&&e.includes(D))){const i=_(t);for(const u of i){const T=S(u,s,r,n);if(T)return T;try{return d(u,s,r,n)}catch{}}}const c=S(t,s,r,n);return c||d(t,s,r,n)};const S=(t,s,r,n)=>{const e=N(t);if(s!=null&&s.filename&&C.test(s.filename)&&e)for(const o of e)try{return d(o,s,r,n)}catch(c){const{code:i}=c;if(i!=="MODULE_NOT_FOUND"&&i!=="ERR_PACKAGE_PATH_NOT_EXPORTED")throw c}};
 diff --git a/dist/esm/index.cjs b/dist/esm/index.cjs
-index 05320e807275c9fcef3401891b15a15e200df860..bd96dc7bd4da5ff8928a311980e81aa33741123a 100755
+index 05320e807275c9fcef3401891b15a15e200df860..7ce55c4b5cb114cfecc09c844011412c5bc83923 100755
 --- a/dist/esm/index.cjs
 +++ b/dist/esm/index.cjs
-@@ -1,5 +1,26 @@
+@@ -1,5 +1,92 @@
 +const { createTildeImportExpander } = require('tilde-imports');
 +const { isGlobSpecifier, createGlobfileManager } = require('glob-imports');
 +const { getMonorepoDirpath } = require('get-monorepo-root');
@@ -47,18 +47,173 @@ index 05320e807275c9fcef3401891b15a15e200df860..bd96dc7bd4da5ff8928a311980e81aa3
  The --loader flag was deprecated in Node v20.6.0 and v18.19.0`)},H=()=>`
  const require = getBuiltin('module').createRequire("${typeof document>"u"?require("url").pathToFileURL(__filename).href:f&&f.src||new URL("esm/index.cjs",document.baseURI).href}");
  require('../source-map.cjs').installSourceMapSupport();
- `,w=async(e,t,r)=>{const a=await e(t,r);return!a.format&&a.url.startsWith(S)&&(a.format=await W(a.url)),a},X=[".js",".json",".ts",".tsx",".jsx"];async function _(e,t,r){const[a,n]=e.split("?");let c;for(const o of X)try{return await w(r,a+o+(n?`?${n}`:""),t)}catch(s){if(c===void 0&&s instanceof Error){const{message:i}=s;s.message=s.message.replace(`${o}'`,"'"),s.stack=s.stack.replace(i,s.message),c=s}}throw c}async function j(e,t,r){const a=U.test(e),n=a?"index":"/index",[c,o]=e.split("?");try{return await _(c+n+(o?`?${o}`:""),t,r)}catch(s){if(!a)try{return await _(e,t,r)}catch{}const i=s,{message:u}=i;throw i.message=i.message.replace(`${n.replace("/",h.sep)}'`,"'"),i.stack=i.stack.replace(u,i.message),i}}const $=/^\.{1,2}\//,F=async function(e,t,r,a){var n;if(U.test(e))return await j(e,t,r);const c=e.startsWith(S)||$.test(e);if(q&&!c&&!((n=t.parentURL)!=null&&n.includes("/node_modules/"))){const o=q(e);for(const s of o)try{return await F(g.pathToFileURL(s).toString(),t,r)}catch{}}if(y.test(t.parentURL)){const o=L.resolveTsPath(e);if(o)for(const s of o)try{return await w(r,s,t)}catch(i){const{code:u}=i;if(u!=="ERR_MODULE_NOT_FOUND"&&u!=="ERR_PACKAGE_PATH_NOT_EXPORTED")throw i}}try{return await w(r,e,t)}catch(o){if(o instanceof Error&&!a){const{code:s}=o;if(s==="ERR_UNSUPPORTED_DIR_IMPORT")try{return await j(e,t,r)}catch(i){if(i.code!=="ERR_PACKAGE_IMPORT_NOT_DEFINED")throw i}if(s==="ERR_MODULE_NOT_FOUND")try{return await _(e,t,r)}catch{}}throw o}};let T;N.connectingToServer.then(e=>{T=e},()=>{});const P=p.isFeatureSupported(p.importAttributes)?"importAttributes":"importAssertions",z=async function(e,t,r){var a;T&&T({type:"dependency",path:e}),J.test(e)&&(t[P]||(t[P]={}),t[P].type="json");const n=await r(e,t);if(!n.source)return n;const c=e.startsWith("file://")?g.fileURLToPath(e):e,o=n.source.toString();if(n.format==="json"||y.test(e)){const s=await R.transform(o,c,{tsconfigRaw:(a=I)==null?void 0:a(c)});return{format:"module",source:k(s)}}if(n.format==="module"){const s=R.transformDynamicImport(c,o);s&&(n.source=k(s))}return n};p.isFeatureSupported(p.moduleRegister)&&O.isMainThread&&D(),exports.globalPreload=H,exports.initialize=G,exports.load=z,exports.resolve=F;
-+D")throw i}}try{return await w(r,e,t)}catch(o){if(o instanceof Error&&!a){const{code:s}=o;if(s==="ERR_UNSUPPORTED_DIR_IMPORT")try{return await j(e,t,r)}catch(i){if(i.code!=="ERR_PACKAGE_IMPORT_NOT_DEFINED")throw i}if(s==="ERR_MODULE_NOT_FOUND")try{return await _(e,t,r)}catch{}}throw o}};let T;N.connectingToServer.then(e=>{T=e},()=>{});const P=p.isFeatureSupported(p.importAttributes)?"importAttributes":"importAssertions",z=async function(e,t,r){var a;T&&T({type:"dependency",path:e}),J.test(e)&&(t[P]||(t[P]={}),t[P].type="json");const n=await r(e,t);if(!n.source)return n;const c=e.startsWith("file://")?g.fileURLToPath(e):e,o=n.source.toString();if(n.format==="json"||y.test(e)){const s=await R.transform(o,c,{tsconfigRaw:(a=I)==null?void 0:a(c)});return{format:"module",source:k(s)}}if(n.format==="module"){const s=R.transformDynamicImport(c,o);s&&(n.source=k(s))}return n};p.isFeatureSupported(p.moduleRegister)&&O.isMainThread&&D(),exports.globalPreload=H,exports.initialize=G,exports.load=z,exports.resolve=F;
+-`,w=async(e,t,r)=>{const a=await e(t,r);return!a.format&&a.url.startsWith(S)&&(a.format=await W(a.url)),a},X=[".js",".json",".ts",".tsx",".jsx"];async function _(e,t,r){const[a,n]=e.split("?");let c;for(const o of X)try{return await w(r,a+o+(n?`?${n}`:""),t)}catch(s){if(c===void 0&&s instanceof Error){const{message:i}=s;s.message=s.message.replace(`${o}'`,"'"),s.stack=s.stack.replace(i,s.message),c=s}}throw c}async function j(e,t,r){const a=U.test(e),n=a?"index":"/index",[c,o]=e.split("?");try{return await _(c+n+(o?`?${o}`:""),t,r)}catch(s){if(!a)try{return await _(e,t,r)}catch{}const i=s,{message:u}=i;throw i.message=i.message.replace(`${n.replace("/",h.sep)}'`,"'"),i.stack=i.stack.replace(u,i.message),i}}const $=/^\.{1,2}\//,F=async function(e,t,r,a){var n;if(U.test(e))return await j(e,t,r);const c=e.startsWith(S)||$.test(e);if(q&&!c&&!((n=t.parentURL)!=null&&n.includes("/node_modules/"))){const o=q(e);for(const s of o)try{return await F(g.pathToFileURL(s).toString(),t,r)}catch{}}if(y.test(t.parentURL)){const o=L.resolveTsPath(e);if(o)for(const s of o)try{return await w(r,s,t)}catch(i){const{code:u}=i;if(u!=="ERR_MODULE_NOT_FOUND"&&u!=="ERR_PACKAGE_PATH_NOT_EXPORTED")throw i}}try{return await w(r,e,t)}catch(o){if(o instanceof Error&&!a){const{code:s}=o;if(s==="ERR_UNSUPPORTED_DIR_IMPORT")try{return await j(e,t,r)}catch(i){if(i.code!=="ERR_PACKAGE_IMPORT_NOT_DEFINED")throw i}if(s==="ERR_MODULE_NOT_FOUND")try{return await _(e,t,r)}catch{}}throw o}};let T;N.connectingToServer.then(e=>{T=e},()=>{});const P=p.isFeatureSupported(p.importAttributes)?"importAttributes":"importAssertions",z=async function(e,t,r){var a;T&&T({type:"dependency",path:e}),J.test(e)&&(t[P]||(t[P]={}),t[P].type="json");const n=await r(e,t);if(!n.source)return n;const c=e.startsWith("file://")?g.fileURLToPath(e):e,o=n.source.toString();if(n.format==="json"||y.test(e)){const s=await R.transform(o,c,{tsconfigRaw:(a=I)==null?void 0:a(c)});return{format:"module",source:k(s)}}if(n.format==="module"){const s=R.transformDynamicImport(c,o);s&&(n.source=k(s))}return n};p.isFeatureSupported(p.moduleRegister)&&O.isMainThread&&D(),exports.globalPreload=H,exports.initialize=G,exports.load=z,exports.resolve=F;
++`,w=async(e,t,r)=>{const a=await e(t,r);return!a.format&&a.url.startsWith(S)&&(a.format=await W(a.url)),a},X=[".js",".json",".ts",".tsx",".jsx"];async function _(e,t,r){const[a,n]=e.split("?");let c;for(const o of X)try{return await w(r,a+o+(n?`?${n}`:""),t)}catch(s){if(c===void 0&&s instanceof Error){const{message:i}=s;s.message=s.message.replace(`${o}'`,"'"),s.stack=s.stack.replace(i,s.message),c=s}}throw c}async function j(e,t,r){const a=U.test(e),n=a?"index":"/index",[c,o]=e.split("?");try{return await _(c+n+(o?`?${o}`:""),t,r)}catch(s){if(!a)try{return await _(e,t,r)}catch{}const i=s,{message:u}=i;throw i.message=i.message.replace(`${n.replace("/",h.sep)}'`,"'"),i.stack=i.stack.replace(u,i.message),i}}const $=/^\.{1,2}\//,O=async function(e,t,r,a){
++	const [specifier, context, defaultResolve, recursiveCall] = arguments;
++	if (specifier.includes('/node_modules/')) {
++		return defaultResolve(specifier, context);
++	}
++
++	// Support tilde alias imports
++	if (specifier.startsWith('~') && context.parentURL !== undefined) {
++		const importerFilepath = fileURLToPath(context.parentURL);
++		return {
++			url: pathToFileURL(
++				expandTildeImport({
++					importSpecifier: specifier,
++					importerFilepath
++				})
++			).toString(),
++			format: 'module',
++			shortCircuit: true
++		};
++	}
++
++	// Support glob imports
++	if (isGlobSpecifier(specifier) && context.parentURL !== undefined) {
++		const importerFilepath = fileURLToPath(context.parentURL);
++		const url = pathToFileURL(
++			getGlobfilePath({
++				globfileModuleSpecifier: specifier,
++				importerFilepath
++			})
++		).toString();
++
++		return {
++			url,
++			format: 'module',
++			shortCircuit: true
++		};
++	}
++
++	if (specifier.startsWith('@-/')) {
++		const packageSlug = specifier.match(/@-\/([^/]+)/)?.[1];
++		if (packageSlug === undefined) {
++			throw new Error(
++				`Could not extract monorepo package slug from "${specifier}"`
++			);
++		}
++
++		const packageMetadata = monorepoPackages[`@-/${packageSlug}`];
++		if (packageMetadata === undefined) {
++			throw new Error(`Could not find monorepo package "${specifier}"`);
++		}
++
++		const { packageDirpath, packageJson } = packageMetadata;
++
++		const relativeImportPath = specifier.replace(`@-/${packageSlug}`, '.');
++		const relativeFilePaths =
++			resolveExports(packageJson, relativeImportPath) ?? [];
++
++		if (relativeFilePaths.length > 0) {
++			return {
++				url: pathToFileURL(
++					path.join(packageDirpath, relativeFilePaths[0])
++				).toString(),
++				format: packageJson.type ?? 'commonjs',
++				shortCircuit: true
++			};
++		}
++	}
++var n;if(U.test(e))return await j(e,t,r);const c=e.startsWith(S)||$.test(e);if(q&&!c&&!((n=t.parentURL)!=null&&n.includes("/node_modules/"))){const o=q(e);for(const s of o)try{return await F(g.pathToFileURL(s).toString(),t,r)}catch{}}if(y.test(t.parentURL)){const o=L.resolveTsPath(e);if(o)for(const s of o)try{return await w(r,s,t)}catch(i){const{code:u}=i;if(u!=="ERR_MODULE_NOT_FOUND"&&u!=="ERR_PACKAGE_PATH_NOT_EXPORTED")throw i}}try{return await w(r,e,t)}catch(o){if(o instanceof Error&&!a){const{code:s}=o;if(s==="ERR_UNSUPPORTED_DIR_IMPORT")try{return await j(e,t,r)}catch(i){if(i.code!=="ERR_PACKAGE_IMPORT_NOT_DEFINED")throw i}if(s==="ERR_MODULE_NOT_FOUND")try{return await _(e,t,r)}catch{}}throw o}};let T;N.connectingToServer.then(e=>{T=e},()=>{});const P=p.isFeatureSupported(p.importAttributes)?"importAttributes":"importAssertions",z=async function(e,t,r){var a;T&&T({type:"dependency",path:e}),J.test(e)&&(t[P]||(t[P]={}),t[P].type="json");const n=await r(e,t);if(!n.source)return n;const c=e.startsWith("file://")?g.fileURLToPath(e):e,o=n.source.toString();if(n.format==="json"||y.test(e)){const s=await R.transform(o,c,{tsconfigRaw:(a=I)==null?void 0:a(c)});return{format:"module",source:k(s)}}if(n.format==="module"){const s=R.transformDynamicImport(c,o);s&&(n.source=k(s))}return n};p.isFeatureSupported(p.moduleRegister)&&O.isMainThread&&D(),exports.globalPreload=H,exports.initialize=G,exports.load=z,exports.resolve=F;
 diff --git a/dist/esm/index.mjs b/dist/esm/index.mjs
-index db003e02dcd1917f5a4872b3d6cc771abd778c1f..b55be349d32df509c7f974529b46faf8588b8431 100755
+index db003e02dcd1917f5a4872b3d6cc771abd778c1f..175a2b0a9798c0f177cfb38e0595faaf6e0b5fbb 100755
 --- a/dist/esm/index.mjs
 +++ b/dist/esm/index.mjs
-@@ -2,4 +2,25 @@ import{isMainThread as F}from"worker_threads";import{i as w,a as v,m as M}from".
+@@ -1,5 +1,112 @@
++import { createTildeImportExpander } from 'tilde-imports';
++import { isGlobSpecifier, createGlobfileManager } from 'glob-imports';
++import { getMonorepoDirpath } from 'get-monorepo-root';
++import { exports as resolveExports } from 'resolve.exports';
++import { getMonorepoPackages } from 'monorepo-packages';
++
++const monorepoDirpath = getMonorepoDirpath(import.meta.url);
++if (monorepoDirpath === undefined) {
++	throw new Error('Could not find monorepo root');
++}
++
++const monorepoPackages = getMonorepoPackages({
++	monorepoDirpath
++});
++const expandTildeImport = createTildeImportExpander({
++	monorepoDirpath
++});
++const { getGlobfileContents, getGlobfilePath } = createGlobfileManager({
++	monorepoDirpath
++});
+ import{isMainThread as F}from"worker_threads";import{i as w,a as v,m as M}from"../node-features-fb266590.mjs";import N from"module";import{installSourceMapSupport as _}from"../source-map.mjs";import f from"path";import{fileURLToPath as P,pathToFileURL as U}from"url";import{b as D,t as A}from"../index-bd1ceb03.mjs";import{r as J}from"../resolve-ts-path-eb3847f5.mjs";import{c as b}from"../client-e665d820.mjs";import{parseTsconfig as x,getTsconfig as I,createFilesMatcher as L,createPathsMatcher as $}from"get-tsconfig";import T from"fs";import"esbuild";import"crypto";import"os";import"../temporary-directory-04b36185.mjs";import"net";import"../get-pipe-path-b74d9893.mjs";const C=()=>{_(),N.register("./index.mjs",{parentURL:import.meta.url,data:!0})},p=new Map;async function W(t){if(p.has(t))return p.get(t);if(!await T.promises.access(t).then(()=>!0,()=>!1)){p.set(t,void 0);return}const o=await T.promises.readFile(t,"utf8");try{const e=JSON.parse(o);return p.set(t,e),e}catch{throw new Error(`Error parsing: ${t}`)}}async function q(t){let r=new URL("package.json",t);for(;!r.pathname.endsWith("/node_modules/package.json");){const o=P(r),e=await W(o);if(e)return e;const a=r;if(r=new URL("../package.json",r),r.pathname===a.pathname)break}}async function G(t){var r;const o=await q(t);return(r=o==null?void 0:o.type)!=null?r:"commonjs"}const u=process.env.TSX_TSCONFIG_PATH?{path:f.resolve(process.env.TSX_TSCONFIG_PATH),config:x(process.env.TSX_TSCONFIG_PATH)}:I(),H=u&&L(u),E=u&&$(u),k="file://",h=/\.([cm]?ts|[tj]sx)($|\?)/,X=/\.json(?:$|\?)/,K=t=>{const r=f.extname(t);if(r===".json")return"json";if(r===".mjs"||r===".mts")return"module";if(r===".cjs"||r===".cts")return"commonjs"},Q=t=>{const r=K(t);if(r)return r;if(h.test(t))return G(t)},R=_(),S=/\/(?:$|\?)/,z=async t=>{if(!t)throw new Error(`tsx must be loaded with --import instead of --loader
  The --loader flag was deprecated in Node v20.6.0 and v18.19.0`)},B=()=>`
  const require = getBuiltin('module').createRequire("${import.meta.url}");
  require('../source-map.cjs').installSourceMapSupport();
 -`,d=async(t,r,o)=>{const e=await t(r,o);return!e.format&&e.url.startsWith(k)&&(e.format=await Q(e.url)),e},V=[".js",".json",".ts",".tsx",".jsx"];async function l(t,r,o){const[e,a]=t.split("?");let c;for(const n of V)try{return await d(o,e+n+(a?`?${a}`:""),r)}catch(s){if(c===void 0&&s instanceof Error){const{message:i}=s;s.message=s.message.replace(`${n}'`,"'"),s.stack=s.stack.replace(i,s.message),c=s}}throw c}async function j(t,r,o){const e=S.test(t),a=e?"index":"/index",[c,n]=t.split("?");try{return await l(c+a+(n?`?${n}`:""),r,o)}catch(s){if(!e)try{return await l(t,r,o)}catch{}const i=s,{message:m}=i;throw i.message=i.message.replace(`${a.replace("/",f.sep)}'`,"'"),i.stack=i.stack.replace(m,i.message),i}}const Y=/^\.{1,2}\//,O=async function(t,r,o,e){var a;if(S.test(t))return await j(t,r,o);const c=t.startsWith(k)||Y.test(t);if(E&&!c&&!((a=r.parentURL)!=null&&a.includes("/node_modules/"))){const n=E(t);for(const s of n)try{return await O(U(s).toString(),r,o)}catch{}}if(h.test(r.parentURL)){const n=J(t);if(n)for(const s of n)try{return await d(o,s,r)}catch(i){const{code:m}=i;if(m!=="ERR_MODULE_NOT_FOUND"&&m!=="ERR_PACKAGE_PATH_NOT_EXPORTED")throw i}}try{return await d(o,t,r)}catch(n){if(n instanceof Error&&!e){const{code:s}=n;if(s==="ERR_UNSUPPORTED_DIR_IMPORT")try{return await j(t,r,o)}catch(i){if(i.code!=="ERR_PACKAGE_IMPORT_NOT_DEFINED")throw i}if(s==="ERR_MODULE_NOT_FOUND")try{return await l(t,r,o)}catch{}}throw n}};let g;b.then(t=>{g=t},()=>{});const y=w(v)?"importAttributes":"importAssertions",Z=async function(t,r,o){var e;g&&g({type:"dependency",path:t}),X.test(t)&&(r[y]||(r[y]={}),r[y].type="json");const a=await o(t,r);if(!a.source)return a;const c=t.startsWith("file://")?P(t):t,n=a.source.toString();if(a.format==="json"||h.test(t)){const s=await D(n,c,{tsconfigRaw:(e=H)==null?void 0:e(c)});return{format:"module",source:R(s)}}if(a.format==="module"){const s=A(c,n);s&&(a.source=R(s))}return a};w(M)&&F&&C();export{B as globalPreload,z as initialize,Z as load,O as resolve};
-+`,d=async(t,r,o)=>{const e=await t(r,o);return!e.format&&e.url.startsWith(k)&&(e.format=await Q(e.url)),e},V=[".js",".json",".ts",".tsx",".jsx"];async function l(t,r,o){const[e,a]=t.split("?");let c;for(const n of V)try{return await d(o,e+n+(a?`?${a}`:""),r)}catch(s){if(c===void 0&&s instanceof Error){const{message:i}=s;s.message=s.message.replace(`${n}'`,"'"),s.stack=s.stack.replace(i,s.message),c=s}}throw c}async function j(t,r,o){const e=S.test(t),a=e?"index":"/index",[c,n]=t.split("?");try{return await l(c+a+(n?`?${n}`:""),r,o)}catch(s){if(!e)try{return await l(t,r,o)}catch{}const i=s,{message:m}=i;throw i.message=i.message.replace(`${a.replace("/",f.sep)}'`,"'"),i.stack=i.stack.replace(m,i.message),i}}const Y=/^\.{1,2}\//,O=async function(t,r,o,e){var a;if(S.test(t))return await j(t,r,o);const c=t.startsWith(k)||Y.test(t);if(E&&!c&&!((a=r.parentURL)!=null&&a.includes("/node_modules/"))){const n=E(t);for(const s of n)try{return await O(U(s).toString(),r,o)}catch{}}if(h.test(r.parentURL)){const n=J(t);if(n)for(const s of n)try{return await d(o,s,r)}catch(i){const{code:m}=i;if(m!=="ERR_MODULE_NOT_FOUND"&&m!=="ERR_PACKAGE_PATH_NOT_EXPORTED")throw i}}try{return await d(o,t,r)}catch(n){if(n instanceof Error&&!e){const{code:s}=n;if(s==="ERR_UNSUPPORTED_DIR_IMPORT")try{return await j(t,r,o)}catch(i){if(i.code!=="ERR_PACKAGE_IMPORT_NOT_DEFINED")throw i}if(s==="ERR_MODULE_NOT_FOUND")try{return await l(t,r,o)}catch{}}throw n}};let g;b.then(t=>{g=t},()=>{});const y=w(v)?"importAttributes":"importAssertions",Z=async function(t,r,o){var e;g&&g({type:"dependency",path:t}),X.test(t)&&(r[y]||(r[y]={}),r[y].type="json");const a=await o(t,r);if(!a.source)return a;const c=t.startsWith("file://")?P(t):t,n=a.source.toString();if(a.format==="json"||h.test(t)){const s=await D(n,c,{tsconfigRaw:(e=H)==null?void 0:e(c)});return{format:"module",source:R(s)}}if(a.format==="module"){const s=A(c,n);s&&(a.source=R(s))}return a};w(M)&&F&&import path from 'node:path';
++`,d=async(t,r,o)=>{const e=await t(r,o);return!e.format&&e.url.startsWith(k)&&(e.format=await Q(e.url)),e},V=[".js",".json",".ts",".tsx",".jsx"];async function l(t,r,o){const[e,a]=t.split("?");let c;for(const n of V)try{return await d(o,e+n+(a?`?${a}`:""),r)}catch(s){if(c===void 0&&s instanceof Error){const{message:i}=s;s.message=s.message.replace(`${n}'`,"'"),s.stack=s.stack.replace(i,s.message),c=s}}throw c}async function j(t,r,o){const e=S.test(t),a=e?"index":"/index",[c,n]=t.split("?");try{return await l(c+a+(n?`?${n}`:""),r,o)}catch(s){if(!e)try{return await l(t,r,o)}catch{}const i=s,{message:m}=i;throw i.message=i.message.replace(`${a.replace("/",f.sep)}'`,"'"),i.stack=i.stack.replace(m,i.message),i}}const Y=/^\.{1,2}\//,O=async function(t,r,o,e){
++	const [specifier, context, defaultResolve, recursiveCall] = arguments;
++	if (specifier.includes('/node_modules/')) {
++		return defaultResolve(specifier, context);
++	}
++
++	// Support tilde alias imports
++	if (specifier.startsWith('~') && context.parentURL !== undefined) {
++		const importerFilepath = fileURLToPath(context.parentURL);
++		return {
++			url: pathToFileURL(
++				expandTildeImport({
++					importSpecifier: specifier,
++					importerFilepath
++				})
++			).toString(),
++			format: 'module',
++			shortCircuit: true
++		};
++	}
++
++	// Support glob imports
++	if (isGlobSpecifier(specifier) && context.parentURL !== undefined) {
++		const importerFilepath = fileURLToPath(context.parentURL);
++		const url = pathToFileURL(
++			getGlobfilePath({
++				globfileModuleSpecifier: specifier,
++				importerFilepath
++			})
++		).toString();
++
++		return {
++			url,
++			format: 'module',
++			shortCircuit: true
++		};
++	}
++
++	if (specifier.startsWith('@-/')) {
++		const packageSlug = specifier.match(/@-\/([^/]+)/)?.[1];
++		if (packageSlug === undefined) {
++			throw new Error(
++				`Could not extract monorepo package slug from "${specifier}"`
++			);
++		}
++
++		const packageMetadata = monorepoPackages[`@-/${packageSlug}`];
++		if (packageMetadata === undefined) {
++			throw new Error(`Could not find monorepo package "${specifier}"`);
++		}
++
++		const { packageDirpath, packageJson } = packageMetadata;
++
++		const relativeImportPath = specifier.replace(`@-/${packageSlug}`, '.');
++		const relativeFilePaths =
++			resolveExports(packageJson, relativeImportPath) ?? [];
++
++		if (relativeFilePaths.length > 0) {
++			return {
++				url: pathToFileURL(
++					path.join(packageDirpath, relativeFilePaths[0])
++				).toString(),
++				format: packageJson.type ?? 'commonjs',
++				shortCircuit: true
++			};
++		}
++	}
++var a;if(S.test(t))return await j(t,r,o);const c=t.startsWith(k)||Y.test(t);if(E&&!c&&!((a=r.parentURL)!=null&&a.includes("/node_modules/"))){const n=E(t);for(const s of n)try{return await O(U(s).toString(),r,o)}catch{}}if(h.test(r.parentURL)){const n=J(t);if(n)for(const s of n)try{return await d(o,s,r)}catch(i){const{code:m}=i;if(m!=="ERR_MODULE_NOT_FOUND"&&m!=="ERR_PACKAGE_PATH_NOT_EXPORTED")throw i}}try{return await d(o,t,r)}catch(n){if(n instanceof Error&&!e){const{code:s}=n;if(s==="ERR_UNSUPPORTED_DIR_IMPORT")try{return await j(t,r,o)}catch(i){if(i.code!=="ERR_PACKAGE_IMPORT_NOT_DEFINED")throw i}if(s==="ERR_MODULE_NOT_FOUND")try{return await l(t,r,o)}catch{}}throw n}};let g;b.then(t=>{g=t},()=>{});const y=w(v)?"importAttributes":"importAssertions",Z=async function(t,r,o){var e;g&&g({type:"dependency",path:t}),X.test(t)&&(r[y]||(r[y]={}),r[y].type="json");const a=await o(t,r);if(!a.source)return a;const c=t.startsWith("file://")?P(t):t,n=a.source.toString();if(a.format==="json"||h.test(t)){const s=await D(n,c,{tsconfigRaw:(e=H)==null?void 0:e(c)});return{format:"module",source:R(s)}}if(a.format==="module"){const s=A(c,n);s&&(a.source=R(s))}return a};w(M)&&F&&import path from 'node:path';
 +import { createRequire } from 'node:module';
 +import { isFileEsmSync } from 'is-file-esm-ts';
 +// When the `--import` flag is used, Node.js tries to load the entrypoint using
@@ -79,7 +234,6 @@ index db003e02dcd1917f5a4872b3d6cc771abd778c1f..b55be349d32df509c7f974529b46faf8
 +	registerLoader();
 +}
 +export{B as globalPreload,z as initialize,Z as load,O as resolve};
-+ch{}}if(h.test(r.parentURL)){const n=J(t);if(n)for(const s of n)try{return await d(o,s,r)}catch(i){const{code:m}=i;if(m!=="ERR_MODULE_NOT_FOUND"&&m!=="ERR_PACKAGE_PATH_NOT_EXPORTED")throw i}}try{return await d(o,t,r)}catch(n){if(n instanceof Error&&!e){const{code:s}=n;if(s==="ERR_UNSUPPORTED_DIR_IMPORT")try{return await j(t,r,o)}catch(i){if(i.code!=="ERR_PACKAGE_IMPORT_NOT_DEFINED")throw i}if(s==="ERR_MODULE_NOT_FOUND")try{return await l(t,r,o)}catch{}}throw n}};let g;b.then(t=>{g=t},()=>{});const y=w(v)?"importAttributes":"importAssertions",Z=async function(t,r,o){var e;g&&g({type:"dependency",path:t}),X.test(t)&&(r[y]||(r[y]={}),r[y].type="json");const a=await o(t,r);if(!a.source)return a;const c=t.startsWith("file://")?P(t):t,n=a.source.toString();if(a.format==="json"||h.test(t)){const s=await D(n,c,{tsconfigRaw:(e=H)==null?void 0:e(c)});return{format:"module",source:R(s)}}if(a.format==="module"){const s=A(c,n);s&&(a.source=R(s))}return a};w(M)&&F&&C();export{B as globalPreload,z as initialize,Z as load,O as resolve};
 diff --git a/package.json b/package.json
 index f5ca4c0850ae101c8da9c9531b1e66d559a477a4..d7e60285c8295f419fb260f09bdd7093b4bc1cac 100644
 --- a/package.json

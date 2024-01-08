@@ -14,7 +14,7 @@ await downl(`https://registry.npmjs.org/tsx/-/tsx-${version}.tgz`, "build", {
   extract: { strip: 1 },
 });
 
-applyPatch({
-  patchFilePath: join(import.meta.url, "../generated/tsx@4.7.0.patch"),
-  cwd: "build",
-});
+// applyPatch({
+//   patchFilePath: join(import.meta.url, "../generated/tsx@4.7.0.patch"),
+//   cwd: "build",
+// });

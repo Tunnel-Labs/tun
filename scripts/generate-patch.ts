@@ -27,7 +27,7 @@ await fs.cpSync(temporarySourceDirpath, temporaryPatchDirpath, {
 const replace = function (
   options: Parameters<(typeof replaceInFile)["replaceInFile"]>[0]
 ) {
-  return replaceInFile.default({
+  return (replaceInFile.default ?? replaceInFile).replaceInFileSync({
     ...options,
     files: [options.files]
       .flat()
