@@ -235,10 +235,10 @@ index cd6f75632c9bb0f802b05959b8bfe534f565d675..de4c1c24573be15f1caef243beb03c70
 +	}
 +var e;const o=t.indexOf("?");if(o!==-1&&(t=t.slice(0,o)),_&&!I.test(t)&&!((e=s==null?void 0:s.filename)!=null&&e.includes(D))){const i=_(t);for(const u of i){const T=S(u,s,r,n);if(T)return T;try{return d(u,s,r,n)}catch{}}}const c=S(t,s,r,n);return c||d(t,s,r,n)};const S=(t,s,r,n)=>{const e=N(t);if(s!=null&&s.filename&&C.test(s.filename)&&e)for(const o of e)try{return d(o,s,r,n)}catch(c){const{code:i}=c;if(i!=="MODULE_NOT_FOUND"&&i!=="ERR_PACKAGE_PATH_NOT_EXPORTED")throw c}};
 diff --git a/dist/esm/index.cjs b/dist/esm/index.cjs
-index 05320e807275c9fcef3401891b15a15e200df860..735bc88ec5d3ad336164d97d91a891cb3fe58b72 100755
+index 05320e807275c9fcef3401891b15a15e200df860..0c920974eb848a7410b2e2f8fbdb80a0cb1a171e 100755
 --- a/dist/esm/index.cjs
 +++ b/dist/esm/index.cjs
-@@ -1,5 +1,122 @@
+@@ -1,5 +1,131 @@
 +const path = require('path');
 +const { createTildeImportExpander } = require('tilde-imports');
 +const { isGlobSpecifier, createGlobfileManager } = require('glob-imports');
@@ -361,12 +361,21 @@ index 05320e807275c9fcef3401891b15a15e200df860..735bc88ec5d3ad336164d97d91a891cb
 +			shortCircuit: true
 +		};
 +	}
-+var a;T&&T({type:"dependency",path:e}),J.test(e)&&(t[P]||(t[P]={}),t[P].type="json");const n=await r(e,t);if(!n.source)return n;const c=e.startsWith("file://")?g.fileURLToPath(e):e,o=n.source.toString();if(n.format==="json"||y.test(e)){const s=await R.transform(o,c,{tsconfigRaw:(a=I)==null?void 0:a(c)});return{format:"module",source:k(s)}}if(n.format==="module"){const s=R.transformDynamicImport(c,o);s&&(n.source=k(s))}return n};p.isFeatureSupported(p.moduleRegister)&&O.isMainThread&&D(),exports.globalPreload=H,exports.initialize=G,exports.load=z,exports.resolve=F;
++var a;T&&T({type:"dependency",path:e}),J.test(e)&&(t[P]||(t[P]={}),t[P].type="json");const n=await r(e,t);if(!n.source)return n;const c=e.startsWith("file://")?g.fileURLToPath(e):e,o=n.source.toString();if(n.format==="json"||y.test(e)){const s=await R.transform(o,c,{tsconfigRaw:(() => {
++	let tsconfig = (a=I)==null?void 0:a(c);
++	return {
++		...tsconfig,
++		compilerOptions: {
++			...tsconfig?.compilerOptions,
++			experimentalDecorators: true
++		}
++	};
++})()});return{format:"module",source:k(s)}}if(n.format==="module"){const s=R.transformDynamicImport(c,o);s&&(n.source=k(s))}return n};p.isFeatureSupported(p.moduleRegister)&&O.isMainThread&&D(),exports.globalPreload=H,exports.initialize=G,exports.load=z,exports.resolve=F;
 diff --git a/dist/esm/index.mjs b/dist/esm/index.mjs
-index db003e02dcd1917f5a4872b3d6cc771abd778c1f..3c517daf0860b2afe4122475d56d62f5dabfd297 100755
+index db003e02dcd1917f5a4872b3d6cc771abd778c1f..b9e5a13e2f8cb802b98a88ce888ac85126add866 100755
 --- a/dist/esm/index.mjs
 +++ b/dist/esm/index.mjs
-@@ -1,5 +1,142 @@
+@@ -1,5 +1,151 @@
 +import path from 'node:path';
 +import { createRequire } from 'node:module';
 +import { isFileEsmSync } from 'is-file-esm-ts';import { createTildeImportExpander } from 'tilde-imports';
@@ -490,7 +499,16 @@ index db003e02dcd1917f5a4872b3d6cc771abd778c1f..3c517daf0860b2afe4122475d56d62f5
 +			shortCircuit: true
 +		};
 +	}
-+var e;g&&g({type:"dependency",path:t}),X.test(t)&&(r[y]||(r[y]={}),r[y].type="json");const a=await o(t,r);if(!a.source)return a;const c=t.startsWith("file://")?P(t):t,n=a.source.toString();if(a.format==="json"||h.test(t)){const s=await D(n,c,{tsconfigRaw:(e=H)==null?void 0:e(c)});return{format:"module",source:R(s)}}if(a.format==="module"){const s=A(c,n);s&&(a.source=R(s))}return a};w(M)&&F// When the `--import` flag is used, Node.js tries to load the entrypoint using
++var e;g&&g({type:"dependency",path:t}),X.test(t)&&(r[y]||(r[y]={}),r[y].type="json");const a=await o(t,r);if(!a.source)return a;const c=t.startsWith("file://")?P(t):t,n=a.source.toString();if(a.format==="json"||h.test(t)){const s=await D(n,c,{tsconfigRaw:(() => {
++	let tsconfig = (e=H)==null?void 0:e(c);
++	return {
++		...tsconfig,
++		compilerOptions: {
++			...tsconfig?.compilerOptions,
++			experimentalDecorators: true
++		}
++	};
++})()});return{format:"module",source:R(s)}}if(a.format==="module"){const s=A(c,n);s&&(a.source=R(s))}return a};w(M)&&F// When the `--import` flag is used, Node.js tries to load the entrypoint using
 +// ESM, which breaks for extension-less JavaScript files.
 +// Thus, if we detect that the entrypoint is an extension-less file, we
 +// short-circuit and load it via CommonJS instead.

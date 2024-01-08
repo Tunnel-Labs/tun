@@ -186,4 +186,20 @@ export default [
 			`,
     ],
   },
+	{
+		files: ['dist/esm/index.mjs', 'dist/esm/index.cjs'],
+		from: /tsconfigRaw:(.*?)\}/,
+		to: outdent`
+			tsconfigRaw:(() => {
+				let tsconfig = $1;
+				return {
+					...tsconfig,
+					compilerOptions: {
+						...tsconfig?.compilerOptions,
+						experimentalDecorators: true
+					}
+				};
+			})()}
+		`
+	}
 ];
