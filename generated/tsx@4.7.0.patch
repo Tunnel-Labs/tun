@@ -1,5 +1,5 @@
 diff --git a/dist/cjs/index.cjs b/dist/cjs/index.cjs
-index c81fa598119bd3d694a4aef75d67e9d1d76781cb..7fc090c23e5b3eb48f0c8fb4e469d6ead74d70fc 100755
+index c81fa598119bd3d694a4aef75d67e9d1d76781cb..7eb1476954fe1a226fa7c04995b8cb14c9a2cdd9 100755
 --- a/dist/cjs/index.cjs
 +++ b/dist/cjs/index.cjs
 @@ -1 +1,112 @@
@@ -54,7 +54,7 @@ index c81fa598119bd3d694a4aef75d67e9d1d76781cb..7fc090c23e5b3eb48f0c8fb4e469d6ea
 +		filePath.endsWith(extension)
 +	);
 +	if (!shouldTransformFile) {
-+		return G(module, filePath);
++		return N(module, filePath);
 +	}
 +
 +	let code = fs.readFileSync(filePath, 'utf8');
@@ -117,7 +117,7 @@ index c81fa598119bd3d694a4aef75d67e9d1d76781cb..7fc090c23e5b3eb48f0c8fb4e469d6ea
 +	}
 +var t;const r=s.indexOf("?");if(r!==-1&&(s=s.slice(0,r)),x&&!M.test(s)&&!((t=e==null?void 0:e.filename)!=null&&t.includes(A))){const i=x(s);for(const h of i){const _=F(h,e,n,o);if(_)return _;try{return T(h,e,n,o)}catch{}}}const c=F(s,e,n,o);return c||T(s,e,n,o)};const F=(s,e,n,o)=>{const t=j.resolveTsPath(s);if(e!=null&&e.filename&&O.test(e.filename)&&t)for(const r of t)try{return T(r,e,n,o)}catch(c){const{code:i}=c;if(i!=="MODULE_NOT_FOUND"&&i!=="ERR_PACKAGE_PATH_NOT_EXPORTED")throw c}};
 diff --git a/dist/cjs/index.mjs b/dist/cjs/index.mjs
-index cd6f75632c9bb0f802b05959b8bfe534f565d675..22dc4034d1aae724d75cb7fa2bc10d4096602930 100755
+index cd6f75632c9bb0f802b05959b8bfe534f565d675..0caf89772e805eb12649a57f35471249a2b5abf3 100755
 --- a/dist/cjs/index.mjs
 +++ b/dist/cjs/index.mjs
 @@ -1 +1,112 @@
@@ -172,7 +172,7 @@ index cd6f75632c9bb0f802b05959b8bfe534f565d675..22dc4034d1aae724d75cb7fa2bc10d40
 +		filePath.endsWith(extension)
 +	);
 +	if (!shouldTransformFile) {
-+		return N(module, filePath);
++		return G(module, filePath);
 +	}
 +
 +	let code = fs.readFileSync(filePath, 'utf8');
