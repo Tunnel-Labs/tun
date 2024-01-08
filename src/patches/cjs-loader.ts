@@ -28,11 +28,64 @@ const topLevelVariables = outdent`
 	];
 `;
 
+const getTransformerPatch = ({
+  files,
+  identifiers: { transformSyncIdentifier, applySourceMapIdentifier },
+}: {
+  files: string[];
+  identifiers: {
+    transformSyncIdentifier: string;
+    applySourceMapIdentifier: string;
+  };
+}) => ({
+  files,
+  from: /const (\w)=\((\w,\w)\)=>\{/,
+  to: outdent({ trimTrailingNewline: false })`
+		const $1=($2)=>{
+			const [module, filePath] = [$2];
+			if (path.basename(filePath).startsWith('__virtual__:')) {
+				const virtualFileContents = getGlobfileContents({
+					globfilePath: filePath,
+					moduleType: 'commonjs',
+					filepathType: 'absolute'
+				});
+
+				module._compile(virtualFileContents, filePath);
+				return;
+			}
+
+			const shouldTransformFile = transformExtensions.some((extension) =>
+				filePath.endsWith(extension)
+			);
+			if (!shouldTransformFile) {
+				return defaultLoader(module, filePath);
+			}
+
+			let code = fs.readFileSync(filePath, 'utf8');
+
+			if (filePath.includes('/node_modules/')) {
+				try {
+					if (isFileEsmSync(filePath)) {
+						const transformed = ${transformSyncIdentifier}(code, filePath, { format: 'cjs' });
+						code = ${applySourceMapIdentifier}(transformed, filePath);
+					}
+				} catch {
+					// Ignore invalid file extension issues
+				}
+
+				module._compile(code, filePath);
+				return;
+			}
+	`,
+});
+
 export default [
   {
     files: ["dist/cjs/index.cjs"],
     from: /^/,
     to: outdent`
+			const fs = require('fs');
+			const path = require('path');
 			const { isGlobSpecifier, createGlobfileManager } = require( 'glob-imports');
 			const { createTildeImportExpander } = require( 'tilde-imports');
 			const { getMonorepoDirpath } = require( 'get-monorepo-root');
@@ -47,6 +100,8 @@ export default [
     files: ["dist/cjs/index.mjs"],
     from: /^/,
     to: outdent`
+			import path from 'path';
+			import fs from 'fs';
 			import { isGlobSpecifier, createGlobfileManager } from 'glob-imports';
 			import { createTildeImportExpander } from 'tilde-imports';
 			import { getMonorepoDirpath } from 'get-monorepo-root';
@@ -55,47 +110,6 @@ export default [
 			import resolve from 'resolve.exports';
 			const monorepoDirpath = getMonorepoDirpath(import.meta.url);
 			${topLevelVariables}
-		`,
-  },
-  {
-    files: ["dist/cjs/index.cjs", "dist/cjs/index.mjs"],
-    from: /const (\w)=\((\w,\w)\)=>\{/,
-    to: outdent({ trimTrailingNewline: false })`
-			const $1=($2)=>{
-				const [module, filePath] = [$2];
-				if (path.basename(filePath).startsWith('__virtual__:')) {
-					const virtualFileContents = getGlobfileContents({
-						globfilePath: filePath,
-						moduleType: 'commonjs',
-						filepathType: 'absolute'
-					});
-
-					module._compile(virtualFileContents, filePath);
-					return;
-				}
-
-				const shouldTransformFile = transformExtensions.some((extension) =>
-					filePath.endsWith(extension)
-				);
-				if (!shouldTransformFile) {
-					return defaultLoader(module, filePath);
-				}
-
-				let code = fs.readFileSync(filePath, 'utf8');
-
-				if (filePath.includes('/node_modules/')) {
-					try {
-						if (isFileEsmSync(filePath)) {
-							const transformed = transformSync(code, filePath, { format: 'cjs' });
-							code = applySourceMap(transformed, filePath);
-						}
-					} catch {
-						// Ignore invalid file extension issues
-					}
-
-					module._compile(code, filePath);
-					return;
-				}
 		`,
   },
   {
@@ -143,6 +157,20 @@ export default [
 				}
 		`,
   },
+  getTransformerPatch({
+    files: ["dist/cjs/index.mjs"],
+    identifiers: {
+      transformSyncIdentifier: "A",
+      applySourceMapIdentifier: "v",
+    },
+  }),
+  getTransformerPatch({
+    files: ["dist/cjs/index.cjs"],
+    identifiers: {
+      transformSyncIdentifier: "d.transformSync",
+      applySourceMapIdentifier: "v",
+    },
+  }),
   {
     files: ["dist/cjs/index.cjs", "dist/cjs/index.mjs"],
     from: "enumerable:!1",
