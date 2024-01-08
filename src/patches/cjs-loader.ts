@@ -30,12 +30,13 @@ const topLevelVariables = outdent`
 
 const getTransformerPatch = ({
   files,
-  identifiers: { transformSyncIdentifier, applySourceMapIdentifier },
+  identifiers,
 }: {
   files: string[];
   identifiers: {
-    transformSyncIdentifier: string;
-    applySourceMapIdentifier: string;
+    transformSync: string;
+    applySourceMap: string;
+    defaultLoader: string;
   };
 }) => ({
   files,
@@ -58,7 +59,7 @@ const getTransformerPatch = ({
 				filePath.endsWith(extension)
 			);
 			if (!shouldTransformFile) {
-				return defaultLoader(module, filePath);
+				return ${identifiers.defaultLoader}(module, filePath);
 			}
 
 			let code = fs.readFileSync(filePath, 'utf8');
@@ -66,8 +67,8 @@ const getTransformerPatch = ({
 			if (filePath.includes('/node_modules/')) {
 				try {
 					if (isFileEsmSync(filePath)) {
-						const transformed = ${transformSyncIdentifier}(code, filePath, { format: 'cjs' });
-						code = ${applySourceMapIdentifier}(transformed, filePath);
+						const transformed = ${identifiers.transformSync}(code, filePath, { format: 'cjs' });
+						code = ${identifiers.applySourceMap}(transformed, filePath);
 					}
 				} catch (e){
 					console.error(e)
@@ -161,15 +162,17 @@ export default [
   getTransformerPatch({
     files: ["dist/cjs/index.mjs"],
     identifiers: {
-      transformSyncIdentifier: "A",
-      applySourceMapIdentifier: "v",
+      transformSync: "A",
+      applySourceMap: "v",
+      defaultLoader: "N",
     },
   }),
   getTransformerPatch({
     files: ["dist/cjs/index.cjs"],
     identifiers: {
-      transformSyncIdentifier: "d.transformSync",
-      applySourceMapIdentifier: "y",
+      transformSync: "d.transformSync",
+      applySourceMap: "y",
+      defaultLoader: "G",
     },
   }),
   {
