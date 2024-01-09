@@ -159,6 +159,7 @@ export default [
     from: [/^/, "&&C();"],
     to: [
       outdent`
+				import fs from 'node:fs';
 				import path from 'node:path';
 				import { createRequire } from 'node:module';
 				import { isFileEsmSync } from 'is-file-esm-ts';
@@ -169,7 +170,7 @@ export default [
 				// Thus, if we detect that the entrypoint is an extension-less file, we
 				// short-circuit and load it via CommonJS instead.
 				&&(() => {
-					if (process.argv[1] !== undefined && path.extname(process.argv[1]) === '') {
+					if (process.argv[1] !== undefined && path.extname(process.argv[1]) === '' && fs.existsSync(process.argv[1])) {
 						try {
 							if (isFileEsmSync(process.argv[1])) {
 								import(process.argv[1]);
@@ -186,10 +187,42 @@ export default [
 			`,
     ],
   },
-	{
-		files: ['dist/esm/index.mjs', 'dist/esm/index.cjs'],
-		from: /tsconfigRaw:(.*?)\}/,
-		to: outdent`
+  {
+    files: ["dist/esm/index.cjs"],
+    from: [/^/, "&&D();"],
+    to: [
+      outdent`
+				const fs = require('node:fs');
+				const path = require('node:path');
+				const { isFileEsmSync } = require('is-file-esm-ts');
+			`,
+      outdent({ trimTrailingNewline: false })`
+				// When the \`--import\` flag is used, Node.js tries to load the entrypoint using
+				// ESM, which breaks for extension-less JavaScript files.
+				// Thus, if we detect that the entrypoint is an extension-less file, we
+				// short-circuit and load it via CommonJS instead.
+				&&(() => {
+					if (process.argv[1] !== undefined && path.extname(process.argv[1]) === '' && fs.existsSync(process.argv[1])) {
+						try {
+							if (isFileEsmSync(process.argv[1])) {
+								import(process.argv[1]);
+							} else {
+								require(process.argv[1]);
+							}
+						} catch {
+							require(process.argv[1]);
+						}
+					} else {
+						D();
+					}
+				})();
+			`,
+    ],
+  },
+  {
+    files: ["dist/esm/index.mjs", "dist/esm/index.cjs"],
+    from: /tsconfigRaw:(.*?)\}/,
+    to: outdent`
 			tsconfigRaw:(() => {
 				let tsconfig = $1;
 				return {
@@ -200,6 +233,6 @@ export default [
 					}
 				};
 			})()}
-		`
-	}
+		`,
+  },
 ];
