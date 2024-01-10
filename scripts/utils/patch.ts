@@ -8,6 +8,7 @@ import * as replaceInFile from "replace-in-file";
 import escapeStringRegexp from "escape-string-regexp";
 import cjsLoaderPatches from "../../src/patches/cjs-loader.js";
 import esmLoaderPatches from "../../src/patches/esm-loader.js";
+import cliPatches from "../../src/patches/cli.js";
 
 export async function generatePatch() {
   const temporaryDirectory = await tmp.dir();
@@ -56,8 +57,10 @@ export async function generatePatch() {
 			"monorepo-packages": "^1.1.0",
 	`,
   });
+
   cjsLoaderPatches.map((patch) => replace(patch));
   esmLoaderPatches.map((patch) => replace(patch));
+  cliPatches.map((patch) => replace(patch));
 
   const { stdout } = await execa(
     "/usr/bin/git",

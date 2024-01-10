@@ -235,11 +235,13 @@ index cd6f75632c9bb0f802b05959b8bfe534f565d675..0caf89772e805eb12649a57f35471249
 +	}
 +var e;const o=t.indexOf("?");if(o!==-1&&(t=t.slice(0,o)),_&&!I.test(t)&&!((e=s==null?void 0:s.filename)!=null&&e.includes(D))){const i=_(t);for(const u of i){const T=S(u,s,r,n);if(T)return T;try{return d(u,s,r,n)}catch{}}}const c=S(t,s,r,n);return c||d(t,s,r,n)};const S=(t,s,r,n)=>{const e=N(t);if(s!=null&&s.filename&&C.test(s.filename)&&e)for(const o of e)try{return d(o,s,r,n)}catch(c){const{code:i}=c;if(i!=="MODULE_NOT_FOUND"&&i!=="ERR_PACKAGE_PATH_NOT_EXPORTED")throw c}};
 diff --git a/dist/esm/index.cjs b/dist/esm/index.cjs
-index 05320e807275c9fcef3401891b15a15e200df860..0c920974eb848a7410b2e2f8fbdb80a0cb1a171e 100755
+index 05320e807275c9fcef3401891b15a15e200df860..c0b7127c8d66f8be8d0ad9efd96cea1998aa2783 100755
 --- a/dist/esm/index.cjs
 +++ b/dist/esm/index.cjs
-@@ -1,5 +1,131 @@
-+const path = require('path');
+@@ -1,5 +1,133 @@
++const fs = require('node:fs');
++const path = require('node:path');
++const { isFileEsmSync } = require('is-file-esm-ts');const path = require('path');
 +const { createTildeImportExpander } = require('tilde-imports');
 +const { isGlobSpecifier, createGlobfileManager } = require('glob-imports');
 +const { getMonorepoDirpath } = require('get-monorepo-root');
@@ -372,10 +374,11 @@ index 05320e807275c9fcef3401891b15a15e200df860..0c920974eb848a7410b2e2f8fbdb80a0
 +	};
 +})()});return{format:"module",source:k(s)}}if(n.format==="module"){const s=R.transformDynamicImport(c,o);s&&(n.source=k(s))}return n};p.isFeatureSupported(p.moduleRegister)&&O.isMainThread&&D(),exports.globalPreload=H,exports.initialize=G,exports.load=z,exports.resolve=F;
 diff --git a/dist/esm/index.mjs b/dist/esm/index.mjs
-index db003e02dcd1917f5a4872b3d6cc771abd778c1f..b9e5a13e2f8cb802b98a88ce888ac85126add866 100755
+index db003e02dcd1917f5a4872b3d6cc771abd778c1f..99c6aa4c4db103479730c070eaa26604562eb8ce 100755
 --- a/dist/esm/index.mjs
 +++ b/dist/esm/index.mjs
-@@ -1,5 +1,151 @@
+@@ -1,5 +1,152 @@
++import fs from 'node:fs';
 +import path from 'node:path';
 +import { createRequire } from 'node:module';
 +import { isFileEsmSync } from 'is-file-esm-ts';import { createTildeImportExpander } from 'tilde-imports';
@@ -513,7 +516,7 @@ index db003e02dcd1917f5a4872b3d6cc771abd778c1f..b9e5a13e2f8cb802b98a88ce888ac851
 +// Thus, if we detect that the entrypoint is an extension-less file, we
 +// short-circuit and load it via CommonJS instead.
 +&&(() => {
-+	if (process.argv[1] !== undefined && path.extname(process.argv[1]) === '') {
++	if (process.argv[1] !== undefined && path.extname(process.argv[1]) === '' && fs.existsSync(process.argv[1])) {
 +		try {
 +			if (isFileEsmSync(process.argv[1])) {
 +				import(process.argv[1]);
